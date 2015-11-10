@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Original Author: Moviuro
+# Distributed under the terms of the WTFPL.
+#
+# You can find a full copy of the license here:
+#      http://www.wtfpl.net/txt/copying/
+
+# Set to debug mode
+if [[ "$1" == "-d" ]] || [[ "$1" == "--debug" ]]; then
+    set -x
+    shift
+fi
+
+_butter_version="butter develop (2015-11-10)"
+
+# Print version and exit
+if [[ "$1" == "version" ]] || [[ "$1" == "--version" ]]; then
+    printf "%s\n" "$_butter_version"
+    exit 0
+fi
+
+# Find libs
+[[ -d ./lib && -r ./lib ]] && _lib_dir="./lib"
+[[ -d /usr/lib/butter && -r /usr/lib/butter ]] && _lib_dir="/usr/lib/butter"
+
+# If libs are not found, fail
+if [[ -z "$_lib_dir" ]] ; then
+    printf "%s\n" "butter libs were not found, aborting..."
+    exit 1
+fi
