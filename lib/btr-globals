@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+__set_default_globals () {
+    # We set global variables here
+
+    #butter_version is set in butter
+    butter_root="/mnt/butter"
+}
+
+__set_globals () {
+    # Load default globals
+    __set_default_globals
+
+    # Override them if needed
+    if [[ -r /etc/butterrc ]]; then
+        . /etc/butterrc
+    fi
+}
