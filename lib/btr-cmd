@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+__parse_cmd () {
+    case "$1" in
+        create)
+            shift
+            __cmd_create "$@"
+            exit ;;
+        destroy)
+            shift
+            __cmd_destroy "$@"
+            exit ;;
+        snapshot)
+            shift
+            __cmd_snapshot "$@"
+            exit ;;
+        snapremove)
+            shift
+            __cmd_snapremove "$@"
+            exit ;;
+        set)
+            shift
+            __cmd_set "$@"
+            exit ;;
+        get)
+            shift
+            __cmd_get "$@"
+            exit ;;
+        help)
+            shift
+            __cmd_help
+            exit ;;
+        *)
+            shift
+            __cmd_help >&2
+            exit 1 ;;
+    esac
+}
+
+__cmd_create () {
+    :
+}
+
+__cmd_destroy () {
+    :
+}
+
+__cmd_snapshot () {
+    :
+}
+
+__cmd_snapremove () {
+    :
+}
+
+__cmd_set () {
+    :
+}
+
+__cmd_get () {
+    :
+}
+
+__cmd_help () {
+    __print_help
+}
+

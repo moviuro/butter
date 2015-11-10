@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+__print_help () {
+cat << __EOH__
+Oops, sorry, no help at the moment.
+__EOH__
+}

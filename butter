@@ -29,3 +29,11 @@ if [[ -z "$_lib_dir" ]] ; then
     printf "%s\n" "butter libs were not found, aborting..."
     exit 1
 fi
+
+shopt -s nullglob
+
+for _lib in $_lib_dir/*; do
+    . $_lib
+done
+
+__parse_cmd "$@"
