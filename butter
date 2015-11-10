@@ -12,11 +12,11 @@ if [[ "$1" == "-d" ]] || [[ "$1" == "--debug" ]]; then
     shift
 fi
 
-_butter_version="butter develop (2015-11-10)"
+butter_version="butter develop (2015-11-10)"
 
 # Print version and exit
 if [[ "$1" == "version" ]] || [[ "$1" == "--version" ]]; then
-    printf "%s\n" "$_butter_version"
+    printf "%s\n" "$butter_version"
     exit 0
 fi
 
