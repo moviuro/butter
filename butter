@@ -36,4 +36,4 @@ for _lib in $_lib_dir/*; do
     . $_lib
 done
 
-__parse_cmd "$@"
+__run "$@"
