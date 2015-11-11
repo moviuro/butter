@@ -12,5 +12,5 @@ __require_bootstraped () {
 
     [[ -d "$butter_root"/"$butter_host" ]] || _ok=0
 
-    (( _ok ))
+    (( _ok )) || __fatal 'butter was not bootstraped: run `butter bootstrap`'
 }
