@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+__init () {
+    # We set global variables first
+    __set_globals
+
+    # Is the root mounted?
+    if ! findmnt $butter_root >/dev/null 2>&1; then
+        __fatal "$butter_root is not mounted"
+    fi
+
+    # We check that the root has the same prog version as the current butter
+    # If not, then force update of properties
+    __check_version || __update
+}
+
+__check_version () {
+    [[ "$(__get_one_prop "version" "/")" == "$butter_version" ]]
+}
+
+__update () {
+    # We update the properties of the root
+    __set_one_prop "version" "$butter_version" "/" # relative to $butter_root
+    # We update the properties of the managed sub-volumes
+    # ...
+}
+

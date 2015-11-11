@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 __run () {
-    __set_globals
+    __init
     __parse_cmd "$@"
 }
 

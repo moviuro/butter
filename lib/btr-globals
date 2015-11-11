@@ -5,6 +5,11 @@ __set_default_globals () {
 
     #butter_version is set in butter
     butter_root="/mnt/butter"
+    butter_prop_prefix="user.be.popho.butter"
+
+    declare -a butter_prop_array
+    butter_prop_array=('mountpoint'
+                       'version')
 }
 
 __set_globals () {
