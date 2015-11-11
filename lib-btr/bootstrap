@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+__bootstrap () {
+    # We create the working directory
+    mkdir -p "$butter_root"/"$butter_host"
+}
+
+__require_bootstraped () {
+    local _ok
+
+    _ok=1
+
+    [[ -d "$butter_root"/"$butter_host" ]] || _ok=0
+
+    (( _ok ))
+}

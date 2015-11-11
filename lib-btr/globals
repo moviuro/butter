@@ -7,6 +7,13 @@ __set_default_globals () {
     butter_root="/mnt/butter"
     butter_prop_prefix="user.be.popho.butter"
 
+    if [[ -r /etc/machine-id ]]; then
+        butter_host="$(< /etc/machine-id)"
+    else
+        butter_host="$(uname -n)"
+        __info "Could not find /etc/machine-id: we use $butter_host as hostname"
+    fi
+
     declare -a butter_prop_array
     butter_prop_array=('mountpoint'
                        'version')

@@ -19,6 +19,7 @@ __check_version () {
 }
 
 __update () {
+    __require_root
     # We update the properties of the root
     __set_one_prop "version" "$butter_version" "/" # relative to $butter_root
     # We update the properties of the managed sub-volumes
