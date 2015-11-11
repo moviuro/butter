@@ -79,7 +79,15 @@ __cmd_snapremove () {
 }
 
 __cmd_set () {
-    :
+    local _prop _value _mountpoint
+
+    _prop="$1"
+    _value="$2"
+    _mountpoint="$3"
+    _path="$(__find_path "$_mountpoint")"
+
+    __require_bootstraped
+    __set "$butter_prop_prefix.$_prop" "$_value" "$_path"
 }
 
 __cmd_get () {

@@ -68,3 +68,16 @@ __escape () {
     systemd-escape "$1"
 }
 
+__find_path () {
+    local _mountpoint _subvol
+
+    _mountpoint="$1"
+
+    for _subvol in "$butter_root/$butter_host/"*; do
+        if [[ "$(__get "$butter_prop_prefix".mountpoint "$_subvol")" ==\
+          "$_mountpoint" ]]; then
+            printf '%s\n' "$_subvol"
+            continue
+        fi
+    done
+}
