@@ -38,29 +38,20 @@ __set_one_prop () {
     __set "$butter_prop_prefix"."$_prop" "$_value" "$butter_root"/"$_path"
 }
 
-__is_in_array () {
-    local _found _prop _array _item
+__require_in_props () {
+    local _prop _found _item
 
-    _found=0
     _prop="$1"
-    _array="$2"
+    _found=0
 
-    for _item in "${_array[*]}"; do
+    for _item in "${butter_prop_array[@]}"; do
         if [[ "$_item" == "$_prop" ]]; then
             _found=1
             continue
         fi
     done
 
-    (( $_found ))
-}
-
-__require_in_props () {
-    local _prop
-
-    _prop="$1"
-
-    __is_in_array "$_prop" "$butter_prop_array"
+    (( _found )) ||  __fatal "Unknown property: $_prop"
 }
 
 __escape () {

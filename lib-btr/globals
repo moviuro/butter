@@ -14,7 +14,7 @@ __set_default_globals () {
         __info "Could not find /etc/machine-id: we use $butter_host as hostname"
     fi
 
-    declare -a butter_prop_array
+    declare -ga butter_prop_array
     butter_prop_array=('mountpoint'
                        'version')
 }

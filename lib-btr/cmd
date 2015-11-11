@@ -91,7 +91,16 @@ __cmd_set () {
 }
 
 __cmd_get () {
-    :
+    local _prop _mountpoint
+
+    _prop="$1"
+    _mountpoint="$2"
+    _path="$(__find_path "$_mountpoint")"
+
+    __require_bootstraped
+    __require_in_props "$_prop"
+    __get "$butter_prop_prefix.$_prop" "$_path"
+
 }
 
 __cmd_help () {
