@@ -21,7 +21,7 @@ if [[ "$1" == "version" ]] || [[ "$1" == "--version" ]]; then
 fi
 
 # Find libs
-[[ -d ./lib && -r ./lib ]] && _lib_dir="./lib"
+[[ -d ./lib-btr && -r ./lib-btr ]] && _lib_dir="./lib-btr"
 [[ -d /usr/lib/butter && -r /usr/lib/butter ]] && _lib_dir="/usr/lib/butter"
 
 # If libs are not found, fail
