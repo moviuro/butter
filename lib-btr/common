@@ -62,3 +62,9 @@ __require_in_props () {
 
     __is_in_array "$_prop" "$butter_prop_array"
 }
+
+__escape () {
+    # TODO: better escaping function? (systemd-independant)
+    systemd-escape "$1"
+}
+

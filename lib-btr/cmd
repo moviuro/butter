@@ -55,7 +55,15 @@ __parse_cmd () {
 }
 
 __cmd_create () {
-    :
+    local _mountpoint _escaped_name _path
+
+    _mountpoint="$1"
+    _escaped_name="$(__escape "$_mountpoint")"
+    _path="$butter_host"/"$_escaped_name"
+
+    __require_bootstraped
+    btrfs subvolume create "$butter_root/$_path"
+    __set_one_prop "mountpoint" "$_mountpoint" "$_path"
 }
 
 __cmd_destroy () {
