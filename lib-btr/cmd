@@ -79,7 +79,7 @@ __cmd_snapremove () {
 }
 
 __cmd_set () {
-    local _prop _value _mountpoint
+    local _prop _value _mountpoint _path _new_path
 
     _prop="$1"
     _value="$2"
@@ -87,6 +87,16 @@ __cmd_set () {
     _path="$(__find_path "$_mountpoint")"
 
     __require_bootstrapped
+
+    # We move the mountpoint
+    if [[ "$_prop" == "mountpoint" ]]; then
+        _new_path="$butter_root/$butter_host/$(__escape "$_value")"
+        if [[ -a "$_new_path" ]]; then
+            __fatal "$_new_path already exists, can't move $_path"
+        fi
+        mv "$_path" "$_new_path"
+        _path="$_new_path"
+    fi
     __set "$butter_prop_prefix.$_prop" "$_value" "$_path"
 }
 
