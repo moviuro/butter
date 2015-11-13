@@ -39,6 +39,11 @@ __parse_cmd () {
             __require_root
             __cmd_set "$@"
             exit ;;
+        mv)
+            shift
+            __require_root
+            __cmd_mv "$@"
+            exit ;;
         get)
             shift
             __cmd_get "$@"
@@ -98,6 +103,15 @@ __cmd_set () {
         _path="$_new_path"
     fi
     __set "$butter_prop_prefix.$_prop" "$_value" "$_path"
+}
+
+__cmd_mv () {
+    local _source _destination
+
+    _source="$1"
+    _destination="$2"
+
+    __cmd_set mountpoint "$_destination" "$_source"
 }
 
 __cmd_get () {
