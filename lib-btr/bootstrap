@@ -5,12 +5,12 @@ __bootstrap () {
     mkdir -p "$butter_root"/"$butter_host"
 }
 
-__require_bootstraped () {
+__require_bootstrapped () {
     local _ok
 
     _ok=1
 
     [[ -d "$butter_root"/"$butter_host" ]] || _ok=0
 
-    (( _ok )) || __fatal 'butter was not bootstraped: run `butter bootstrap`'
+    (( _ok )) || __fatal 'butter was not bootstrapped: run `butter bootstrap`'
 }

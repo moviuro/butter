@@ -1,9 +1,9 @@
 # Butter
-`butter` (until someone finds a better name) iw/will be a `bash` utility to
+`butter` (until someone finds a better name) is/will be a `bash` utility to
 manage btrfs subvolumes.
 
 - Why bash?
-*It is only targetted to Linux, so bash it is.*
+*It is only targeted for Linux, so bash it is.*
 
 - Why butter?
 *Because ButterFS, I guess.*
