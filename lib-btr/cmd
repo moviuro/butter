@@ -71,7 +71,14 @@ __cmd_destroy () {
 }
 
 __cmd_snapshot () {
-    :
+    local _mountpoint _snaptype _path _date
+
+    _mountpoint="$1"
+    _snaptype="${2:-default}"
+    _path="$(__find_path "$_mountpoint")"
+    _date="$(date -u "+%Y-%m-%dT%H:%M:%SZ")"
+
+    btrfs subvolume snapshot -r -- "$_path" "$_path@$_snaptype@$_date"
 }
 
 __cmd_snapremove () {

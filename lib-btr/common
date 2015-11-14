@@ -60,18 +60,14 @@ __escape () {
 }
 
 __find_path () {
-    local _mountpoint _found _subvol
+    local _mountpoint _escaped
 
     _mountpoint="$1"
-    _found=0
+    _escaped="$(__escape "$_mountpoint")"
 
-    for _subvol in "$butter_root/$butter_host/"*; do
-        if [[ "$(__get "$butter_prop_prefix".mountpoint "$_subvol")" ==\
-          "$_mountpoint" ]]; then
-            printf '%s\n' "$_subvol"
-            return
-        fi
-    done
-
-    (( _found )) || __fatal "Couldn't find path to $_mountpoint"
+    if [[ -d "$butter_root/$butter_host/$_escaped" ]]; then
+        printf '%s\n' "$butter_root/$butter_host/$_escaped"
+    else
+        __fatal "Couldn't find path to $_mountpoint"
+    fi
 }
