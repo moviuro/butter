@@ -24,6 +24,10 @@ __parse_cmd () {
             __require_root
             __cmd_destroy "$@"
             exit ;;
+        snaplist)
+            shift
+            __cmd_snaplist "$@"
+            exit ;;
         snapshot)
             shift
             __require_root
@@ -83,6 +87,35 @@ __cmd_snapshot () {
 
 __cmd_snapremove () {
     :
+}
+
+
+__cmd_snaplist () {
+    local _opt _date _mountpoint _snaptype _path _subvolume
+
+    while getopts "d:m:t:" _opt; do
+        case "$_opt" in
+            d) _date="$OPTARG";;
+            m) _mountpoint="$OPTARG";;
+            t) _snaptype="$(__escape "$OPTARG")";;
+        esac
+    done
+
+    shift "$(( OPTIND - 1 ))"
+
+    # Mountpoint was specified and we use it to filter
+    if [[ -n "$_mountpoint" ]]; then
+        _path="$(__find_path "$_mountpoint")"
+    else
+        _path="$butter_root/$butter_host/*"
+    fi
+
+    {
+    printf '%s@%s@%s\n' 'MOUNTPOINT' 'TYPE' 'DATE'
+    for _subvolume in $_path@${_snaptype:-*}@"$_date"*; do
+        printf '%s\n' "${_subvolume##*/}"
+    done
+    } | column -ts@
 }
 
 __cmd_set () {
