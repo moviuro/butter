@@ -127,10 +127,13 @@ __cmd_snapremove () {
 
 
 __cmd_snaplist () {
-    local _opt _date _mountpoint _snaptype _path _subvolume
+    local _noheader _opt _date _mountpoint _snaptype _path _subvolume
 
-    while getopts "d:m:t:" _opt; do
+    _noheader=0
+
+    while getopts ":Hd:m:t:" _opt; do
         case "$_opt" in
+            H) _noheader=1;;
             d) _date="$OPTARG";;
             m) _mountpoint="$OPTARG";;
             t) _snaptype="$(__escape "$OPTARG")";;
@@ -147,7 +150,7 @@ __cmd_snaplist () {
     fi
 
     {
-    printf '%s@%s@%s\n' 'MOUNTPOINT' 'TYPE' 'DATE'
+    (( _noheader )) || printf '%s@%s@%s\n' 'MOUNTPOINT' 'TYPE' 'DATE'
     for _subvolume in $_path@${_snaptype:-*}@"$_date"*; do
         printf '%s\n' "${_subvolume##*/}"
     done
