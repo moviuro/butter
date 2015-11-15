@@ -45,7 +45,7 @@ __require_in_props () {
     _found=0
 
     for _item in "${butter_prop_array[@]}"; do
-        if [[ "$_item" == "$_prop" ]]; then
+        if [[ "$_prop" = $_item ]]; then
             _found=1
             continue
         fi
