@@ -167,6 +167,7 @@ __cmd_set () {
     _path="$(__find_path "$_mountpoint")"
 
     __require_bootstrapped
+    __require_in_props "$_prop"
 
     # We can't move the mountpoint
     if [[ "$_prop" == "mountpoint" ]]; then
