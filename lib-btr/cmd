@@ -51,6 +51,10 @@ __parse_cmd () {
             shift
             __cmd_help
             exit ;;
+        find)
+            shift
+            __cmd_find "$@"
+            exit ;;
         *)
             shift
             __cmd_help >&2
@@ -197,6 +201,10 @@ __cmd_bootstrap () {
     __info "butter root is $butter_root"
     __bootstrap
     __require_bootstrapped
+}
+
+__cmd_find () {
+    __find_all "$@"
 }
 
 __require_root () {

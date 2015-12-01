@@ -71,3 +71,25 @@ __find_path () {
         __fatal "Couldn't find path to $_mountpoint"
     fi
 }
+
+# Returns a \n-seperated list of paths which match some properties
+# usage: __find_all [PROP VALUE [...]]
+__find_all () {
+    local _prop _value _filtered_list _thing
+    if (( $# > 1 )); then
+        _prop="$1"
+        _value="$2"
+        shift 2
+        mapfile -t _filtered_list < <(__find_all "$@")
+
+        for _thing in "${_filtered_list[@]}"; do
+            if [[ "$(__get_one_prop "$_prop" "$_thing")" == "$_value" ]]; then
+                printf '%s\n' "$_thing"
+            fi
+        done
+    else
+        for _thing in "$butter_root/$butter_host/"*; do
+            printf '%s\n' "$_thing"
+        done
+    fi
+}
