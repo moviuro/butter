@@ -73,7 +73,8 @@ __cmd_create () {
     btrfs subvolume create "$butter_root/$_path"
     __set_one_prop "mountpoint" "$_mountpoint" "$butter_root/$_path"
     __set_one_prop "snapshot.default.max" "5" "$butter_root/$_path"
-    __set_one_prop "uuid" "$(uuidgen)" "$butter_root/$_path"
+    __set_one_prop "snapshot.is" "0" "$butter_root/$_path"
+    __set_one_prop "uuid" "$(uuidgen -r)" "$butter_root/$_path"
 }
 
 __cmd_destroy () {
