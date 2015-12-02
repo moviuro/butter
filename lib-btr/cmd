@@ -201,34 +201,20 @@ __cmd_snapremove () {
 
 
 __cmd_snaplist () {
-    local _noheader _opt _date _mountpoint _snaptype _path _subvolume
+    local _snaplist _subvolume _mountpoint _uuid _type _date
 
-    _noheader=0
-
-    while getopts ":Hd:m:t:" _opt; do
-        case "$_opt" in
-            H) _noheader=1;;
-            d) _date="$OPTARG";;
-            m) _mountpoint="$OPTARG";;
-            t) _snaptype="$(__escape "$OPTARG")";;
-        esac
-    done
-
-    shift "$(( OPTIND - 1 ))"
-
-    # Mountpoint was specified and we use it to filter
-    if [[ -n "$_mountpoint" ]]; then
-        _path="$(__find_path "$_mountpoint")"
-    else
-        _path="$butter_root/$butter_host/*"
-    fi
-
+    mapfile -t _snaplist < <(__find_all "snapshot.is" "1")
     {
-    (( _noheader )) || printf '%s@%s@%s\n' 'MOUNTPOINT' 'TYPE' 'DATE'
-    for _subvolume in $_path@${_snaptype:-*}@"$_date"*; do
-        printf '%s\n' "${_subvolume##*/}"
+    printf '%s^%s^%s^%s\n' 'MOUNTPOINT' 'TYPE' 'DATE' 'UUID'
+    for _subvolume in "${_snaplist[@]}"; do
+        _mountpoint="$(__get_one_prop "mountpoint" "$_subvolume")"
+        _uuid="$(__get_one_prop "uuid" "$_subvolume")"
+        _type="$(__get_one_prop "snapshot.type" "$_subvolume")"
+        _date="$(date --date=@"$(__get_one_prop "snapshot.timestamp" \
+          "$_subvolume")")"
+        printf '%s^%s^%s^%s\n' "$_mountpoint" "$_type" "$_date" "$_uuid"
     done
-    } | column -ts@
+    } | sort -n | column -ts^
 }
 
 __cmd_set () {
