@@ -96,3 +96,19 @@ __find_all () {
         fi
     done
 }
+
+# Find all that match and sort according to SORTING_PROP
+# usage: __find_all_sort SORTING_PROP [PROP VALUE [...]]
+__find_all_sort () {
+    local _sorting_prop _found _path _sorting_value
+
+    _sorting_prop="$1"
+    shift
+
+    mapfile -t _found < <(__find_all "$@")
+
+    { for _path in "${_found[@]}"; do
+        _sorting_value="$(__get_one_prop "$_sorting_prop" "$_path")"
+        printf '%s^%s\n' "$_sorting_value" "$_path"
+    done } | sort -n | awk -F^ '{ print $2 }'
+}
