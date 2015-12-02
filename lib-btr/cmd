@@ -82,14 +82,81 @@ __cmd_destroy () {
 }
 
 __cmd_snapshot () {
-    local _mountpoint _snaptype _path _date
+    local _mountpoint _path _snaptype _snaplist _max _to_delete _number
+
+    # We take a snapshot
+    __do_snapshot "$@"
 
     _mountpoint="$1"
-    _snaptype="${2:-default}"
     _path="$(__find_path "$_mountpoint")"
-    _date="$(date -u "+%Y-%m-%dT%H:%M:%SZ")"
 
-    btrfs subvolume snapshot -r -- "$_path" "$_path@$_snaptype@$_date"
+    shift
+
+    while (( $# > 1 )); do
+        if [[ "$1" == "type" ]]; then
+            _snaptype="$2"
+        fi
+        shift 2
+    done
+    _snaptype="${_snaptype:-default}"
+
+    # We make sure to honor "snapshot.$_snaptype.max"
+    mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" \
+      "snapshot.type" "$_snaptype" "mountpoint" "$_mountpoint"\
+      "snapshot.is" "1")
+
+    _max="$(__get_one_prop "snapshot.${_snaptype}.max" "$_path")"
+    [[ -z "$_max" ]] && _max=5
+
+    if (( "${#_snaplist[@]}" > "$_max" )); then
+        _to_delete=$(( ${#_snaplist[@]} - $_max ))
+        for ((_number=0;_number<$_to_delete;_number++)); do
+            btrfs subvolume delete -- "${_snaplist[$_number]}"
+        done
+    fi
+}
+
+# Take a snapshot of a given mountpoint, assign it lots of properties
+# usage: __do_snapshot PATH [PROP VALUE [...]]
+__do_snapshot () {
+    local _mountpoint _path _date _uuid _to_path _prop _value
+
+    _mountpoint="$1"
+    _path="$(__find_path "$_mountpoint")"
+
+    shift
+
+    _date="$(date "+%s")"
+    _uuid="$(uuidgen -r)"
+    _to_path="$_path@$_uuid"
+    _tmp_path="${_to_path}.tmp"
+
+    # a temporary snapshot because btrfs(8) still sucks
+    btrfs subvolume snapshot -- "$_path" "$_tmp_path"
+
+    while (( $# > 1 )); do
+        _prop="$1"
+        _value="$2"
+
+        __set_one_prop "snapshot.$_prop" "$_value" "$_tmp_path"
+        shift 2
+    done
+
+    # we set the timestamp
+    __set_one_prop "snapshot.timestamp" "$_date" "$_tmp_path"
+    # we set an uuid
+    __set_one_prop "uuid" "$_uuid" "$_tmp_path"
+    # we set the snapshot boolean
+    __set_one_prop "snapshot.is" "1" "$_tmp_path"
+
+    # we set the snapshot type if none was set
+    if ! __get_one_prop "snapshot.type" "$_tmp_path"; then
+        __set_one_prop "snapshot.type" "default" "$_tmp_path"
+    fi
+
+    # we snapshot read-only
+    btrfs subvolume snapshot -r -- "$_tmp_path" "$_to_path"
+    btrfs subvolume delete -- "$_tmp_path"
 }
 
 __cmd_snapremove () {
