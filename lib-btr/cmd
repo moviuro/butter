@@ -24,6 +24,10 @@ __parse_cmd () {
             __require_root
             __cmd_destroy "$@"
             exit ;;
+        list)
+            shift
+            __cmd_list "$@"
+            exit ;;
         snaplist)
             shift
             __cmd_snaplist "$@"
@@ -79,6 +83,16 @@ __cmd_create () {
 
 __cmd_destroy () {
     :
+}
+
+__cmd_list () {
+    mapfile -t _paths < <(__find_all "snapshot.is" "0" "$@")
+    { printf '%s^%s\n' "MOUNTPOINT" "UUID"
+    for _path in "${_paths[@]}"; do
+        _mountpoint="$(__get_one_prop "mountpoint" "$_path")"
+        _uuid="$(__get_one_prop "uuid" "$_path")"
+        printf '%s^%s\n' "$_mountpoint" "$_uuid"
+    done } | column -ts^
 }
 
 __cmd_snapshot () {
