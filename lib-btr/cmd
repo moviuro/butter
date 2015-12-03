@@ -234,34 +234,42 @@ __cmd_snaplist () {
 __cmd_set () {
     local _prop _value _mountpoint _path _new_path
 
-    _prop="$1"
-    _value="$2"
-    _mountpoint="$3"
-    _path="$(__find_path "$_mountpoint")"
-
     __require_bootstrapped
-    __require_in_props "$_prop"
+    _mountpoint="$1"
+    _path="$(__find_path "$_mountpoint")"
+    shift
 
-    # We change some properties
-    case "$_prop" in
-        "mountpoint") __fatal "nope";;
-        "uuid") __fatal "nope";;
-    esac
+    while (( $# > 1 )); do
+        _prop="$1"
+        _value="$2"
+
+        __require_in_props "$_prop"
+
+        # We cannot change some properties
+        case "$_prop" in
+            "mountpoint") __fatal "nope";;
+            "uuid") __fatal "nope";;
+        esac
  
-    __set "$butter_prop_prefix.$_prop" "$_value" "$_path"
+        __set "$butter_prop_prefix.$_prop" "$_value" "$_path"
+
+        shift 2
+    done
 }
 
 __cmd_get () {
     local _prop _mountpoint
 
-    _prop="$1"
-    _mountpoint="$2"
+    _mountpoint="$1"
     _path="$(__find_path "$_mountpoint")"
+    shift
 
     __require_bootstrapped
-    __require_in_props "$_prop"
-    __get "$butter_prop_prefix.$_prop" "$_path"
-
+    { for _prop in "$@"; do
+        __require_in_props "$_prop"
+        _value="$(__get "$butter_prop_prefix.$_prop" "$_path")"
+        printf '%s^%s^%s\n' "$_mountpoint" "$_prop" "$_value"
+    done } | column -ts^
 }
 
 __cmd_help () {
