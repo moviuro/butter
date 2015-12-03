@@ -60,13 +60,14 @@ __escape () {
 }
 
 __find_path () {
-    local _mountpoint _escaped
+    local _mountpoint _path
 
     _mountpoint="$1"
-    _escaped="$(__escape "$_mountpoint")"
+    _path="$(__find_all "snapshot.is" "0" \
+                        "mountpoint" "$_mountpoint")"
 
-    if [[ -d "$butter_root/$butter_host/$_escaped" ]]; then
-        printf '%s\n' "$butter_root/$butter_host/$_escaped"
+    if [[ -n "$_path" ]]; then
+        printf '%s\n' "${_path[0]}"
     else
         __fatal "Couldn't find path to $_mountpoint"
     fi
