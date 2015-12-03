@@ -98,14 +98,14 @@ __cmd_list () {
 __cmd_snapshot () {
     local _mountpoint _path _snaptype _snaplist _max _to_delete _number
 
-    # We take a snapshot
-    __do_snapshot "$@"
+    _args=("$@")
 
     _mountpoint="$1"
     _path="$(__find_path "$_mountpoint")"
 
     shift
 
+    # we extract the snapshot type
     while (( $# > 1 )); do
         if [[ "$1" == "type" ]]; then
             _snaptype="$2"
@@ -114,19 +114,24 @@ __cmd_snapshot () {
     done
     _snaptype="${_snaptype:-default}"
 
-    # We make sure to honor "snapshot.$_snaptype.max"
-    mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" \
-      "snapshot.type" "$_snaptype" "mountpoint" "$_mountpoint"\
-      "snapshot.is" "1")
-
     _max="$(__get_one_prop "snapshot.${_snaptype}.max" "$_path")"
     [[ -z "$_max" ]] && _max=5
 
-    if (( "${#_snaplist[@]}" > "$_max" )); then
-        _to_delete=$(( ${#_snaplist[@]} - $_max ))
-        for ((_number=0;_number<$_to_delete;_number++)); do
-            btrfs subvolume delete -- "${_snaplist[$_number]}"
-        done
+    if (( _max != 0 )); then
+        # We take a snapshot
+        __do_snapshot "${_args[@]}"
+
+        # We make sure to honor "snapshot.$_snaptype.max"
+        mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" \
+          "snapshot.type" "$_snaptype" "mountpoint" "$_mountpoint"\
+          "snapshot.is" "1")
+
+        if (( "${#_snaplist[@]}" > "$_max" )); then
+            _to_delete=$(( ${#_snaplist[@]} - $_max ))
+            for ((_number=0;_number<$_to_delete;_number++)); do
+                btrfs subvolume delete -- "${_snaplist[$_number]}"
+            done
+        fi
     fi
 }
 
