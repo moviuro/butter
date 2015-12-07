@@ -232,6 +232,7 @@ __cmd_snaplist () {
     mapfile -t _snaplist < <(__find_all "snapshot.is" "1")
     {
     printf '%s^%s^%s^%s\n' 'MOUNTPOINT' 'TYPE' 'DATE' 'UUID'
+    {
     for _subvolume in "${_snaplist[@]}"; do
         _mountpoint="$(__get_one_prop "mountpoint" "$_subvolume")"
         _uuid="$(__get_one_prop "uuid" "$_subvolume")"
@@ -240,7 +241,8 @@ __cmd_snaplist () {
           "$_subvolume")")"
         printf '%s^%s^%s^%s\n' "$_mountpoint" "$_type" "$_date" "$_uuid"
     done
-    } | sort -n | column -ts^
+    } | sort -n
+    } | column -ts^
 }
 
 __cmd_set () {
