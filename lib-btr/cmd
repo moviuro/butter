@@ -82,7 +82,14 @@ __cmd_create () {
 }
 
 __cmd_destroy () {
-    :
+    local _mountpoint
+
+    _mountpoint="$1"
+    mapfile -t _subvolumes < <(__find_all "mountpoint" "$_mountpoint")
+
+    for _sub in "${_subvolumes[@]}"; do
+        btrfs subvolume delete -- "$_sub"
+    done
 }
 
 __cmd_list () {
