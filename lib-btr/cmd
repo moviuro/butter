@@ -82,7 +82,7 @@ __cmd_create () {
 }
 
 __cmd_destroy () {
-    local _mountpoint
+    local _mountpoint _subvolumes _sub
 
     _mountpoint="$1"
     mapfile -t _subvolumes < <(__find_all "mountpoint" "$_mountpoint")
