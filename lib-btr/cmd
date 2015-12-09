@@ -280,7 +280,10 @@ __cmd_get () {
     shift
 
     __require_bootstrapped
-    { for _prop in "$@"; do
+    
+    {
+    printf '%s^%s^%s\n' "MOUNTPOINT" "PROP" "VALUE"
+    for _prop in "$@"; do
         __require_in_props "$_prop"
         _value="$(__get "$butter_prop_prefix.$_prop" "$_path")"
         printf '%s^%s^%s\n' "$_mountpoint" "$_prop" "$_value"
