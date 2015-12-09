@@ -263,6 +263,7 @@ __cmd_set () {
         case "$_prop" in
             "mountpoint") __fatal "nope";;
             "uuid") __fatal "nope";;
+            "snapshot.is") __fatal "nope";;
         esac
  
         __set "$butter_prop_prefix.$_prop" "$_value" "$_path"
