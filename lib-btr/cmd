@@ -188,43 +188,22 @@ __do_snapshot () {
 }
 
 __cmd_snapremove () {
-    local _force _answer _opt _date _mountpoint _snaptype _path _subvolume
+    local _mountpoint _number _snaplist
 
-    _force=0
+    _mountpoint="$1"
+    _number="${2:-5}"
 
-    while getopts ":fd:m:t:" _opt; do
-        case "$_opt" in
-            f) _force=1;;
-            d) _date="$OPTARG";;
-            m) _mountpoint="$OPTARG";;
-            t) _snaptype="$(__escape "$OPTARG")";;
-        esac
+    shift 2
+
+    mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" "snapshot.is" 1 \
+                                 "mountpoint" "$_mountpoint" \
+                                 "$@")
+
+    for ((_num=0; _num < $_number; _num++)); do
+        if [[ -n "${_snaplist[$_num]}" ]]; then
+            btrfs subvolume delete -- "${_snaplist[$_num]}"
+        fi
     done
-
-    shift "$(( OPTIND - 1 ))"
-
-    # Mountpoint was specified and we use it to filter
-    if [[ -n "$_mountpoint" ]]; then
-        _path="$(__find_path "$_mountpoint")"
-    else
-        _path="$butter_root/$butter_host/*"
-    fi
-
-    if (( _force )); then
-        for _subvolume in $_path@${_snaptype:-*}@"$_date"*; do
-            btrfs subvolume delete "$_subvolume"
-        done
-    else
-        for _subvolume in $_path@${_snaptype:-*}@"$_date"*; do
-            printf '%s\n%s\n' "Will now destroy $_subvolume" "Continue [yes/NO]?"
-            read _answer
-            case "$_answer" in
-                [yY][eE][sS])
-                    btrfs subvolume delete "$_subvolume"
-                    ;;
-            esac
-        done
-    fi
 }
 
 
