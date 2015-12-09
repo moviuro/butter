@@ -93,6 +93,8 @@ __cmd_destroy () {
 }
 
 __cmd_list () {
+    local _paths _path _mountpoint _uuid
+
     mapfile -t _paths < <(__find_all "snapshot.is" "0" "$@")
     { printf '%s^%s\n' "MOUNTPOINT" "UUID"
     for _path in "${_paths[@]}"; do
