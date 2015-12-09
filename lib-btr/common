@@ -60,6 +60,14 @@ __escape () {
 }
 
 __find_path () {
+    if [[ "$1" == /* ]]; then
+        __find_path_mountpoint "$@"
+    else
+        __find_path_uuid "$@"
+    fi
+}
+
+__find_path_mountpoint () {
     local _mountpoint _path
 
     _mountpoint="$1"
@@ -112,4 +120,15 @@ __find_all_sort () {
         _sorting_value="$(__get_one_prop "$_sorting_prop" "$_path")"
         printf '%s^%s\n' "$_sorting_value" "$_path"
     done } | sort -n | awk -F^ '{ print $2 }'
+}
+
+__find_path_uuid () {
+    local _path _show _prop _thing _value
+    _uuid="$1"
+    for _path in "$butter_root/$butter_host/"*; do
+        if [[ "$(__get_one_prop "uuid" "$_path")" == "$_uuid"* ]]; then
+            printf '%s\n' "$_path"
+            return
+        fi
+    done
 }
