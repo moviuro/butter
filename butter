@@ -13,6 +13,7 @@ if [[ "$1" == "-d" ]] || [[ "$1" == "--debug" ]]; then
 fi
 
 butter_version="butter v1"
+pid=$$
 
 # Print version and exit
 if [[ "$1" == "version" ]] || [[ "$1" == "--version" ]]; then
