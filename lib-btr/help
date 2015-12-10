@@ -2,6 +2,140 @@
 
 __print_help () {
 cat << __EOH__
-Oops, sorry, no help at the moment.
+NAME
+    $0 is a btrfs subvolume manager.
+
+SYNOPSIS
+    $0 bootstrap
+    $0 create MOUNTPOINT [PROP VALUE [...]]
+    $0 destroy MOUNTPOINT
+    $0 list
+    $0 snaplist
+    $0 snapshot MOUNTPOINT [PROP VALUE [...]]
+    $0 snapremove MOUNTPOINT [COUNT [PROP VALUE [...]]]
+    $0 set MOUNTPOINT PROP VALUE [...]
+    $0 get MOUNTPOINT PROP [PROP [...]]
+    $0 help
+    $0 find [PROP VALUE [...]]
+
+DESCRIPTION
+    $0 manages stuff like properties (stored as extended attributes, see
+    xattr(7), getfattr(1) and setfattr(1)), subvolumes (see btrfs(8)), snapshots
+    and retention.
+
+    $0 bootstrap
+
+        This initiates $0, allowing the creation of the root of all subvolumes.
+
+        Typically, you should do this first:
+          # mkdir -p /mnt/butter
+          # mount -osubvol=/ /mnt/butter
+
+        bootstrap will then create $butter_root/$butter_host
+
+    $0 create MOUNTPOINT [PROP VALUE [...]]
+
+        Will create a btrfs(8) subvolume in the $0 root and set some initial
+        values, as well as default values for the following properties:
+
+          o mountpoint (obviously)
+          o snapshot.default.max (defaults to 5)
+          o uuid
+          o snapshot.is (must be "0")
+
+        Examples:
+
+          # $0 create / snapshot.hourly.max 24 snapshot.daily.max 7
+          # $0 create /home snapshot.default.max 10
+
+    $0 destroy MOUNTPOINT
+
+        Will delete all subvolumes that have the given mountpoint (snapshots
+        too)
+
+        Example:
+
+          # $0 destroy /var
+
+    $0 list
+
+        Lists all subvolumes that are managed by $0.  Does not show snapshots.
+
+    $0 snaplist
+
+        Lists all snapshots.  Does not show subvolumes.
+
+    $0 snapshot MOUNTPOINT [PROP VALUE [...]]
+
+        Take a snapshot and set some properties, as well as some default values
+        for the following properties:
+
+          o snapshot.type (defaults to "default")
+          o snapshot.is (must be "1")
+          o snapshot.timestamp
+          o uuid
+
+        Examples:
+
+        Snapshot /var/log with type "manual" and a comment
+          # $0 snapshot /var/log type manual comment "first shot at $0"
+
+        Simply snapshot /home
+          # $0 snapshot /home
+
+    $0 snapremove MOUNTPOINT [COUNT [PROP VALUE [...]]]
+
+        Removes a number of old snapshots, given some conditions.
+        COUNT defaults to "5".
+        snapremove will delete the snpashots with the smallest
+        snapshot.timestamp values first.
+
+        Examples:
+
+        Remove the 2 oldest snapshots of /
+          # $0 snapremove / 2
+
+        Remove the 5 oldest "hourly" snapshots of /home
+          # $0 snapremove /home 5 snapshot.type hourly
+
+    $0 set MOUNTPOINT PROP VALUE [...]
+
+        Set some properties.
+        The submitted properties must be validated by $0
+        Arbitrary properties can be set with the "custom." prefix.
+        Some properties are read-only and you should not attempt to modify
+        them, such as:
+
+          o snapshot.is
+          o mountpoint
+          o uuid
+
+        Example:
+
+        Set the default maximum number of snapshots for /var/log
+          # $0 set /var/log snapshot.default.max 3
+
+    $0 get MOUNTPOINT PROP [PROP [...]]
+
+        Get some properties in a nice table. (Not script friendly yet)
+
+        Example:
+
+          # $0 get / uuid snapshot.default.max
+
+    $0 help
+
+        Display this help text
+
+    $0 find [PROP VALUE [...]]
+
+        Find snapshots or subvolumes that match PROP=VALUE for submitted
+        properties and values.
+
+        Example:
+
+        Find snapshots with type "foo"
+          # $0 find snapshot.is 1 snapshot.type foo
+
 __EOH__
 }
