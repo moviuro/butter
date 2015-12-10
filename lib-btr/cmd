@@ -71,14 +71,17 @@ __cmd_create () {
 
     _mountpoint="$1"
     _escaped_name="$(__escape "$_mountpoint")"
-    _path="$butter_host"/"$_escaped_name"
+    _path="$butter_root/$butter_host/$_escaped_name"
+    shift
 
     __require_bootstrapped
-    btrfs subvolume create -- "$butter_root/$_path"
-    __set_one_prop "mountpoint" "$_mountpoint" "$butter_root/$_path"
-    __set_one_prop "snapshot.default.max" "5" "$butter_root/$_path"
-    __set_one_prop "snapshot.is" "0" "$butter_root/$_path"
-    __set_one_prop "uuid" "$(uuidgen -r)" "$butter_root/$_path"
+    btrfs subvolume create -- "$_path"
+    __set_one_prop "mountpoint" "$_mountpoint" "$_path"
+    __set_one_prop "snapshot.default.max" "5" "$_path"
+    __set_one_prop "snapshot.is" "0" "$_path"
+    __set_one_prop "uuid" "$(uuidgen -r)" "$_path"
+
+    __cmd_set "$_mountpoint" "$@"
 }
 
 __cmd_destroy () {
