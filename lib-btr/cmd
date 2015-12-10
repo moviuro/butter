@@ -74,7 +74,7 @@ __cmd_create () {
     _path="$butter_host"/"$_escaped_name"
 
     __require_bootstrapped
-    btrfs subvolume create "$butter_root/$_path"
+    btrfs subvolume create -- "$butter_root/$_path"
     __set_one_prop "mountpoint" "$_mountpoint" "$butter_root/$_path"
     __set_one_prop "snapshot.default.max" "5" "$butter_root/$_path"
     __set_one_prop "snapshot.is" "0" "$butter_root/$_path"

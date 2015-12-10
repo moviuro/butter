@@ -10,11 +10,11 @@ __info () {
 }
 
 __get () {
-    getfattr --only-values --name "$1" "$2" 2>/dev/null
+    getfattr --only-values --name "$1" -- "$2" 2>/dev/null
 }
 
 __set () {
-    setfattr --name "$1" --value "$2" "$3"
+    setfattr --name "$1" --value "$2" -- "$3"
 }
 
 __get_one_prop () {
@@ -56,7 +56,7 @@ __require_in_props () {
 
 __escape () {
     # TODO: better escaping function? (systemd-independant)
-    systemd-escape "$1"
+    systemd-escape -- "$1"
 }
 
 __find_path () {
