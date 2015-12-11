@@ -257,21 +257,41 @@ __cmd_set () {
 }
 
 __cmd_get () {
-    local _prop _mountpoint
+    local _opt _header _valuesonly _mountpoint _prop
+
+    _header=1
+    _valuesonly=0
+
+    while getopts ":Ho:" _opt; do
+        case "$_opt" in
+            H) _header=0 ;;
+            o) [[ "$OPTARG" == "values" ]] && _valuesonly=1 ;;
+            *) __fatal "Unknown option: $OPT"
+        esac
+    done
+    shift $((OPTIND-1))
 
     _mountpoint="$1"
     _path="$(__find_path "$_mountpoint")"
     shift
 
     __require_bootstrapped
-    
-    {
-    printf '%s^%s^%s\n' "MOUNTPOINT" "PROP" "VALUE"
-    for _prop in "$@"; do
-        __require_in_props "$_prop"
-        _value="$(__get "$butter_prop_prefix.$_prop" "$_path")"
-        printf '%s^%s^%s\n' "$_mountpoint" "$_prop" "$_value"
-    done } | column -ts^
+
+    if ((_valuesonly)); then
+        for _prop in "$@"; do
+            _value="$(__get_one_prop "$_prop" "$_path")"
+            printf '%s\n' "$_value"
+        done
+    else
+        {
+            ((_header)) && \
+                printf '%s^%s^%s\n' "MOUNTPOINT" "PROP" "VALUE"
+            for _prop in "$@"; do
+                _value="$(__get_one_prop "$_prop" "$_path")"
+                printf '%s^%s^%s\n' "$_mountpoint" "$_prop" "$_value"
+            done
+        } | column -ts^
+    fi
 }
 
 __cmd_help () {
