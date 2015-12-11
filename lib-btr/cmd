@@ -230,11 +230,12 @@ __cmd_snaplist () {
 }
 
 __cmd_set () {
-    local _prop _value _mountpoint _path
+    local _prop _value _mountpoint _path _err_msg
 
     __require_bootstrapped
     _mountpoint="$1"
     _path="$(__find_path "$_mountpoint")"
+    _err_msg="Can't change the value of:"
     shift
 
     while (( $# > 1 )); do
@@ -243,9 +244,9 @@ __cmd_set () {
 
         # We cannot change some properties
         case "$_prop" in
-            "mountpoint") __fatal "nope";;
-            "uuid") __fatal "nope";;
-            "snapshot.is") __fatal "nope";;
+            "mountpoint"|\
+            "uuid"|\
+            "snapshot.is") __fatal "$_err_msg $_prop";;
         esac
  
         __set_one_prop "$_prop" "$_value" "$_path"
