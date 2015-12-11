@@ -241,8 +241,6 @@ __cmd_set () {
         _prop="$1"
         _value="$2"
 
-        __require_in_props "$_prop"
-
         # We cannot change some properties
         case "$_prop" in
             "mountpoint") __fatal "nope";;
@@ -250,7 +248,7 @@ __cmd_set () {
             "snapshot.is") __fatal "nope";;
         esac
  
-        __set "$butter_prop_prefix.$_prop" "$_value" "$_path"
+        __set_one_prop "$_prop" "$_value" "$_path"
 
         shift 2
     done
