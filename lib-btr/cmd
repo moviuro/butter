@@ -230,7 +230,7 @@ __cmd_snaplist () {
 }
 
 __cmd_set () {
-    local _prop _value _mountpoint _path _new_path
+    local _prop _value _mountpoint _path
 
     __require_bootstrapped
     _mountpoint="$1"
