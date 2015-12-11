@@ -298,9 +298,15 @@ __cmd_help () {
 }
 
 __cmd_bootstrap () {
-    __info "butter root is $butter_root"
-    __bootstrap
-    __require_bootstrapped
+    cat << EOB
+Actually, I won't bootstrap on my own. (Too complicated)
+Do this:
+
+ # mkdir "$butter_root"
+ # mount /dev/sdNX -osubvol=/ "$butter_root"
+ # mkdir -p "$butter_root/$butter_host"
+
+EOB
 }
 
 __cmd_find () {
@@ -309,4 +315,13 @@ __cmd_find () {
 
 __require_root () {
     [[ -w "$butter_root" ]] || __fatal "Can't write to $butter_root"
+}
+
+__require_bootstrapped () {
+    local _ok
+    _ok=1
+
+    findmnt -- "$butter_root" >/dev/null 2>&1 || _ok=0
+    [[ -d "$butter_root/$butter_host" ]] || _ok=0
+    (( _ok )) || __fatal 'butter was not bootstrapped: run `butter bootstrap`'
 }
