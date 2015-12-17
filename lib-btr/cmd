@@ -91,7 +91,7 @@ __cmd_destroy () {
     mapfile -t _subvolumes < <(__find_all "mountpoint" "$_mountpoint")
 
     for _sub in "${_subvolumes[@]}"; do
-        btrfs subvolume delete -- "$_sub"
+        btrfs subvolume delete -- "$_sub" >/dev/null
     done
 }
 
@@ -144,7 +144,7 @@ __cmd_snapshot () {
         if (( "${#_snaplist[@]}" > "$_max" )); then
             _to_delete=$(( ${#_snaplist[@]} - $_max ))
             for ((_number=0;_number<$_to_delete;_number++)); do
-                btrfs subvolume delete -- "${_snaplist[$_number]}"
+                btrfs subvolume delete -- "${_snaplist[$_number]}" >/dev/null
             done
         fi
     fi
@@ -167,7 +167,7 @@ __do_snapshot () {
     _tmp_path="${_to_path}.tmp"
 
     # a temporary snapshot because btrfs(8) still sucks
-    btrfs subvolume snapshot -- "$_path" "$_tmp_path"
+    btrfs subvolume snapshot -- "$_path" "$_tmp_path" >/dev/null
 
     while (( $# > 1 )); do
         _prop="$1"
@@ -192,8 +192,8 @@ __do_snapshot () {
     fi
 
     # we snapshot read-only
-    btrfs subvolume snapshot -r -- "$_tmp_path" "$_to_path"
-    btrfs subvolume delete -- "$_tmp_path"
+    btrfs subvolume snapshot -r -- "$_tmp_path" "$_to_path" >/dev/null
+    btrfs subvolume delete -- "$_tmp_path" >/dev/null
 }
 
 __cmd_snapremove () {
@@ -210,7 +210,7 @@ __cmd_snapremove () {
 
     for ((_num=0; _num < $_number; _num++)); do
         if [[ -n "${_snaplist[$_num]}" ]]; then
-            btrfs subvolume delete -- "${_snaplist[$_num]}"
+            btrfs subvolume delete -- "${_snaplist[$_num]}" >/dev/null &
         else
             break
         fi
