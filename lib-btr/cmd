@@ -211,6 +211,8 @@ __cmd_snapremove () {
     for ((_num=0; _num < $_number; _num++)); do
         if [[ -n "${_snaplist[$_num]}" ]]; then
             btrfs subvolume delete -- "${_snaplist[$_num]}"
+        else
+            break
         fi
     done
 }
