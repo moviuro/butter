@@ -127,7 +127,10 @@ __cmd_snapshot () {
     _snaptype="${_snaptype:-default}"
 
     _max="$(__get_one_prop "snapshot.${_snaptype}.max" "$_path")"
-    [[ -z "$_max" ]] && _max=5
+    if [[ -z "$_max" ]]; then
+        _max="$(__get_one_prop "snapshot.default.max" "$_path")"
+        [[ -z "$_max" ]] && _max=$default_max_snapshots
+    fi
 
     if (( _max != 0 )); then
         # We take a snapshot
