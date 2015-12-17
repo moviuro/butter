@@ -187,7 +187,7 @@ __do_snapshot () {
     __set_one_prop "mountpoint" "$_mountpoint" "$_tmp_path"
 
     # we set the snapshot type if none was set
-    if ! __get_one_prop "snapshot.type" "$_tmp_path"; then
+    if ! __get_one_prop "snapshot.type" "$_tmp_path" >/dev/null 2>&1; then
         __set_one_prop "snapshot.type" "default" "$_tmp_path"
     fi
 
