@@ -153,16 +153,17 @@ __cmd_snapshot () {
 # Take a snapshot of a given mountpoint, assign it lots of properties
 # usage: __do_snapshot PATH [PROP VALUE [...]]
 __do_snapshot () {
-    local _mountpoint _path _date _uuid _to_path _prop _value
+    local _mountpoint _path _escaped_path _date _uuid _to_path _prop _value
 
     _mountpoint="$1"
     _path="$(__find_path "$_mountpoint")"
+    _escaped_path="$(__escape "$_path")"
 
     shift
 
     _date="$(date "+%s")"
     _uuid="$(uuidgen -r)"
-    _to_path="$_path@$_uuid"
+    _to_path="$butter_root/$butter_host/$_escaped_path@$_uuid"
     _tmp_path="${_to_path}.tmp"
 
     # a temporary snapshot because btrfs(8) still sucks
@@ -182,6 +183,8 @@ __do_snapshot () {
     __set_one_prop "uuid" "$_uuid" "$_tmp_path"
     # we set the snapshot boolean
     __set_one_prop "snapshot.is" "1" "$_tmp_path"
+    # we set the snapshot's mountpoint
+    __set_one_prop "mountpoint" "$_mountpoint" "$_tmp_path"
 
     # we set the snapshot type if none was set
     if ! __get_one_prop "snapshot.type" "$_tmp_path"; then

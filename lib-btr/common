@@ -68,16 +68,15 @@ __find_path () {
 }
 
 __find_path_mountpoint () {
-    local _mountpoint _path
+    local _mountpoint
 
     _mountpoint="$1"
-    _path="$(__find_all "snapshot.is" "0" \
-                        "mountpoint" "$_mountpoint")"
 
-    if [[ -n "$_path" ]]; then
-        printf '%s\n' "${_path[0]}"
+    # We make sure the mountpoint is a btrfs subvolume
+    if btrfs subvolume show "$_mountpoint" >/dev/null 2>&1; then
+        printf '%s\n' "$_mountpoint"
     else
-        __fatal "Couldn't find path to $_mountpoint"
+        __fatal "$_mountpoint is not a btrfs subvolume"
     fi
 }
 
