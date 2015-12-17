@@ -7,6 +7,7 @@ __set_default_globals () {
     butter_root="/mnt/butter"
     butter_prop_prefix="user.be.popho.butter"
     default_max_snapshots="5"
+    default_rm_snapshots="1"
 
     if [[ -r /etc/machine-id ]]; then
         butter_host="$(< /etc/machine-id)"

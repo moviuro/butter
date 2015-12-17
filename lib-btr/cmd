@@ -200,7 +200,7 @@ __cmd_snapremove () {
     local _mountpoint _number _snaplist
 
     _mountpoint="$1"
-    _number="${2:-5}"
+    _number="${2:-$default_rm_snapshots}"
 
     shift 2
 
