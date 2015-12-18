@@ -277,6 +277,7 @@ __cmd_get () {
 
     _header=1
     _valuesonly=0
+    __require_bootstrapped
 
     while getopts ":Ho:" _opt; do
         case "$_opt" in
@@ -290,28 +291,29 @@ __cmd_get () {
     mapfile -t _mountpoints < <(__split "$1")
     shift
 
-    for _mountpoint in "${_mountpoints[@]}"; do
-        _path="$(__find_path "$_mountpoint")"
-
-        __require_bootstrapped
-
-        if ((_valuesonly)); then
+    if ((_valuesonly)); then
+        for _mountpoint in "${_mountpoints[@]}"; do
+            _path="$(__find_path "$_mountpoint")"
             for _prop in "$@"; do
                 _value="$(__get_one_prop "$_prop" "$_path")"
                 printf '%s\n' "$_value"
             done
-        else
-            {
-                if ((_header)); then
-                    printf '%s^%s^%s\n' "MOUNTPOINT" "PROP" "VALUE"
-                fi
+        done
+    else
+        {
+            if ((_header)); then
+                printf '%s^%s^%s\n' "MOUNTPOINT" "PROP" "VALUE"
+            fi
+            for _mountpoint in "${_mountpoints[@]}"; do
+                _path="$(__find_path "$_mountpoint")"
+
                 for _prop in "$@"; do
                     _value="$(__get_one_prop "$_prop" "$_path")"
                     printf '%s^%s^%s\n' "$_mountpoint" "$_prop" "$_value"
                 done
-            } | column -ts^
-        fi
-    done
+            done
+        } | column -ts^
+    fi
 }
 
 __cmd_help () {
