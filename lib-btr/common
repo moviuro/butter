@@ -131,3 +131,7 @@ __find_path_uuid () {
         fi
     done
 }
+
+__split () {
+    tr "," "\n" <<< "$1"
+}

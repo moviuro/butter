@@ -108,14 +108,12 @@ __cmd_list () {
 }
 
 __cmd_snapshot () {
-    local _mountpoint _path _snaptype _snaplist _max _to_delete _number
+    local _mountpoints _mountpoint _path _snaptype _snaplist _max _to_delete \
+          _number
 
-    _args=("$@")
-
-    _mountpoint="$1"
-    _path="$(__find_path "$_mountpoint")"
-
+    mapfile -t _mountpoints < <(__split "$1")
     shift
+    _args=("$@")
 
     # we extract the snapshot type
     while (( $# > 1 )); do
@@ -126,28 +124,32 @@ __cmd_snapshot () {
     done
     _snaptype="${_snaptype:-default}"
 
-    _max="$(__get_one_prop "snapshot.${_snaptype}.max" "$_path")"
-    if [[ -z "$_max" ]]; then
-        _max="$(__get_one_prop "snapshot.default.max" "$_path")"
-        [[ -z "$_max" ]] && _max=$default_max_snapshots
-    fi
+    for _mountpoint in "${_mountpoints[@]}"; do
+        _path="$(__find_path "$_mountpoint")"
 
-    if (( _max != 0 )); then
-        # We take a snapshot
-        __do_snapshot "${_args[@]}"
-
-        # We make sure to honor "snapshot.$_snaptype.max"
-        mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" \
-          "snapshot.type" "$_snaptype" "mountpoint" "$_mountpoint"\
-          "snapshot.is" "1")
-
-        if (( "${#_snaplist[@]}" > "$_max" )); then
-            _to_delete=$(( ${#_snaplist[@]} - $_max ))
-            for ((_number=0;_number<$_to_delete;_number++)); do
-                btrfs subvolume delete -- "${_snaplist[$_number]}" >/dev/null
-            done
+        _max="$(__get_one_prop "snapshot.${_snaptype}.max" "$_path")"
+        if [[ -z "$_max" ]]; then
+            _max="$(__get_one_prop "snapshot.default.max" "$_path")"
+            [[ -z "$_max" ]] && _max=$default_max_snapshots
         fi
-    fi
+
+        if (( _max != 0 )); then
+            # We take a snapshot
+            __do_snapshot "$_mountpoint" "${_args[@]}"
+
+            # We make sure to honor "snapshot.$_snaptype.max"
+            mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" \
+              "snapshot.type" "$_snaptype" "mountpoint" "$_mountpoint"\
+              "snapshot.is" "1")
+
+            if (( "${#_snaplist[@]}" > "$_max" )); then
+                _to_delete=$(( ${#_snaplist[@]} - $_max ))
+                for ((_number=0;_number<$_to_delete;_number++)); do
+                    btrfs subvolume delete -- "${_snaplist[$_number]}" >/dev/null
+                done
+            fi
+        fi
+    done
 }
 
 # Take a snapshot of a given mountpoint, assign it lots of properties
@@ -197,23 +199,25 @@ __do_snapshot () {
 }
 
 __cmd_snapremove () {
-    local _mountpoint _number _snaplist
+    local _mountpoints _mountpoint _number _snaplist
 
-    _mountpoint="$1"
+    mapfile -t _mountpoints < <(__split "$1")
     _number="${2:-$default_rm_snapshots}"
-
     shift 2
 
-    mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" "snapshot.is" 1 \
-                                 "mountpoint" "$_mountpoint" \
-                                 "$@")
+    for _mountpoint in "${_mountpoints[@]}"; do
+        mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" \
+                                                 "snapshot.is" 1 \
+                                                 "mountpoint" "$_mountpoint" \
+                                                 "$@")
 
-    for ((_num=0; _num < $_number; _num++)); do
-        if [[ -n "${_snaplist[$_num]}" ]]; then
-            btrfs subvolume delete -- "${_snaplist[$_num]}" >/dev/null &
-        else
-            break
-        fi
+        for ((_num=0; _num < $_number; _num++)); do
+            if [[ -n "${_snaplist[$_num]}" ]]; then
+                btrfs subvolume delete -- "${_snaplist[$_num]}" >/dev/null &
+            else
+                break
+            fi
+        done
     done
 }
 
@@ -241,25 +245,30 @@ __cmd_set () {
     local _prop _value _mountpoint _path _err_msg
 
     __require_bootstrapped
-    _mountpoint="$1"
-    _path="$(__find_path "$_mountpoint")"
-    _err_msg="Can't change the value of:"
+    mapfile -t _mountpoints < <(__split "$1")
     shift
 
-    while (( $# > 1 )); do
-        _prop="$1"
-        _value="$2"
+    for _mountpoint in "${_mountpoints[@]}"; do
+        _path="$(__find_path "$_mountpoint")"
+        _err_msg="Can't change the value of:"
 
-        # We cannot change some properties
-        case "$_prop" in
-            "mountpoint"|\
-            "uuid"|\
-            "snapshot.is") __fatal "$_err_msg $_prop";;
-        esac
- 
-        __set_one_prop "$_prop" "$_value" "$_path"
+        for _arg in "$@"; do
+            if [[ -z "$_prop" ]]; then
+                _prop="$_arg"
+            else
+                _value="$_arg"
 
-        shift 2
+                # We cannot change some properties
+                case "$_prop" in
+                    "mountpoint"|\
+                    "uuid"|\
+                    "snapshot.is") __fatal "$_err_msg $_prop";;
+                esac
+
+                __set_one_prop "$_prop" "$_value" "$_path"
+                unset _prop
+            fi
+        done
     done
 }
 
@@ -278,27 +287,31 @@ __cmd_get () {
     done
     shift $((OPTIND-1))
 
-    _mountpoint="$1"
-    _path="$(__find_path "$_mountpoint")"
+    mapfile -t _mountpoints < <(__split "$1")
     shift
 
-    __require_bootstrapped
+    for _mountpoint in "${_mountpoints[@]}"; do
+        _path="$(__find_path "$_mountpoint")"
 
-    if ((_valuesonly)); then
-        for _prop in "$@"; do
-            _value="$(__get_one_prop "$_prop" "$_path")"
-            printf '%s\n' "$_value"
-        done
-    else
-        {
-            ((_header)) && \
-                printf '%s^%s^%s\n' "MOUNTPOINT" "PROP" "VALUE"
+        __require_bootstrapped
+
+        if ((_valuesonly)); then
             for _prop in "$@"; do
                 _value="$(__get_one_prop "$_prop" "$_path")"
-                printf '%s^%s^%s\n' "$_mountpoint" "$_prop" "$_value"
+                printf '%s\n' "$_value"
             done
-        } | column -ts^
-    fi
+        else
+            {
+                if ((_header)); then
+                    printf '%s^%s^%s\n' "MOUNTPOINT" "PROP" "VALUE"
+                fi
+                for _prop in "$@"; do
+                    _value="$(__get_one_prop "$_prop" "$_path")"
+                    printf '%s^%s^%s\n' "$_mountpoint" "$_prop" "$_value"
+                done
+            } | column -ts^
+        fi
+    done
 }
 
 __cmd_help () {
