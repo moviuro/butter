@@ -13,29 +13,32 @@ manage btrfs subvolumes.
 
 At the moment, `butter` does:
 ```sh
-# ./butter set / snapshot.default.max 3
-# ./butter snapshot / type foo comment "first!"
-Create a snapshot of '/' in '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@ac01be59-3045-4e32-bb85-a75ccba80916.tmp'
-fooCreate a readonly snapshot of '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@ac01be59-3045-4e32-bb85-a75ccba80916.tmp' in '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@ac01be59-3045-4e32-bb85-a75ccba80916'
-Delete subvolume (no-commit): '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@ac01be59-3045-4e32-bb85-a75ccba80916.tmp'
-# ./butter snapshot / type foo comment "second!"
-Create a snapshot of '/' in '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@887e2ad8-d404-4552-b378-0cc066aa0d59.tmp'
-fooCreate a readonly snapshot of '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@887e2ad8-d404-4552-b378-0cc066aa0d59.tmp' in '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@887e2ad8-d404-4552-b378-0cc066aa0d59'
-Delete subvolume (no-commit): '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@887e2ad8-d404-4552-b378-0cc066aa0d59.tmp'
-# ./butter snapshot / type foo comment "third!"
-Create a snapshot of '/' in '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@d1f98120-1194-4a24-b8c4-f5607704a3c6.tmp'
-fooCreate a readonly snapshot of '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@d1f98120-1194-4a24-b8c4-f5607704a3c6.tmp' in '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@d1f98120-1194-4a24-b8c4-f5607704a3c6'
-Delete subvolume (no-commit): '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@d1f98120-1194-4a24-b8c4-f5607704a3c6.tmp'
-# ./butter snapshot / type foo comment "fourth! (oops, first one gone)"
-Create a snapshot of '/' in '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@9dabe8dc-2577-42dc-8e76-bfeef6908686.tmp'
-fooCreate a readonly snapshot of '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@9dabe8dc-2577-42dc-8e76-bfeef6908686.tmp' in '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@9dabe8dc-2577-42dc-8e76-bfeef6908686'
-Delete subvolume (no-commit): '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@9dabe8dc-2577-42dc-8e76-bfeef6908686.tmp'
-Delete subvolume (no-commit): '/mnt/butter/96ee4786d7b24914bd61e2a6aa52ae1f/-@ac01be59-3045-4e32-bb85-a75ccba80916'
-# ./butter snaplist
+# ./butter set /,/home,/var snapshot.default.max 3
+# ./butter snapshot /,/home,/var type foo       
+# ./butter snapshot /,/home,/var type foo
+# ./butter snapshot /,/home,/var type foo
+# ./butter snapshot /,/home,/var type foo
+# ./butter snaplist                      
 MOUNTPOINT  TYPE  DATE                          UUID
-/           foo   Thu Dec 17 22:29:59 CET 2015  887e2ad8-d404-4552-b378-0cc066aa0d59
-/           foo   Thu Dec 17 22:30:04 CET 2015  d1f98120-1194-4a24-b8c4-f5607704a3c6
-/           foo   Thu Dec 17 22:30:16 CET 2015  9dabe8dc-2577-42dc-8e76-bfeef6908686
+/           foo   Fri Dec 18 23:54:37 CET 2015 0d2506b1-f4ba-48a4-b592-00bf50d20d42
+/           foo   Fri Dec 18 23:54:40 CET 2015 56e3cb9e-b403-4e5e-903f-a4905c9120a1
+/           foo   Fri Dec 18 23:54:43 CET 2015 3627ae90-cc61-4e93-9bf0-ae62670668e0
+/home       foo   Fri Dec 18 23:54:38 CET 2015 0ef2f703-b89e-49ee-bc55-ee513effe446
+/home       foo   Fri Dec 18 23:54:41 CET 2015 6e6ea37a-405f-4149-9bc0-874ed6a39dcf
+/home       foo   Fri Dec 18 23:54:44 CET 2015 6cec5a9b-7cda-40b1-8e1d-6bf69af6e7be
+/var        foo   Fri Dec 18 23:54:38 CET 2015 9d4bcd13-1ab9-4b7d-8821-5406a71ad2b7
+/var        foo   Fri Dec 18 23:54:42 CET 2015 5de947e4-d134-4687-8d00-c495a8c608a6
+/var        foo   Fri Dec 18 23:54:45 CET 2015 b97cbcee-2cef-4e90-bda8-c7956d0b1dba
+# ./butter snapremove /,/var
+# ./butter snaplist         
+MOUNTPOINT  TYPE  DATE                          UUID
+/           foo   Fri Dec 18 23:54:40 CET 2015 56e3cb9e-b403-4e5e-903f-a4905c9120a1
+/           foo   Fri Dec 18 23:54:43 CET 2015 3627ae90-cc61-4e93-9bf0-ae62670668e0
+/home       foo   Fri Dec 18 23:54:38 CET 2015 0ef2f703-b89e-49ee-bc55-ee513effe446
+/home       foo   Fri Dec 18 23:54:41 CET 2015 6e6ea37a-405f-4149-9bc0-874ed6a39dcf
+/home       foo   Fri Dec 18 23:54:44 CET 2015 6cec5a9b-7cda-40b1-8e1d-6bf69af6e7be
+/var        foo   Fri Dec 18 23:54:42 CET 2015 5de947e4-d134-4687-8d00-c495a8c608a6
+/var        foo   Fri Dec 18 23:54:45 CET 2015 b97cbcee-2cef-4e90-bda8-c7956d0b1db
 ```
 
 ## TODO
