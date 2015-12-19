@@ -19,11 +19,6 @@ __parse_cmd () {
             __require_root
             __cmd_create "$@"
             exit ;;
-        destroy)
-            shift
-            __require_root
-            __cmd_destroy "$@"
-            exit ;;
         list)
             shift
             __cmd_list "$@"
@@ -82,17 +77,6 @@ __cmd_create () {
     __set_one_prop "uuid" "$(uuidgen -r)" "$_path"
 
     __cmd_set "$_mountpoint" "$@"
-}
-
-__cmd_destroy () {
-    local _mountpoint _subvolumes _sub
-
-    _mountpoint="$1"
-    mapfile -t _subvolumes < <(__find_all "mountpoint" "$_mountpoint")
-
-    for _sub in "${_subvolumes[@]}"; do
-        btrfs subvolume delete -- "$_sub" >/dev/null
-    done
 }
 
 __cmd_list () {
