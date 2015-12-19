@@ -95,7 +95,7 @@ __cmd_snapshot () {
     local _mountpoints _mountpoint _path _snaptype _snaplist _max _to_delete \
           _number
 
-    mapfile -t _mountpoints < <(__split "$1")
+    _cs_mountpoints="$1"
     shift
     _args=("$@")
 
@@ -107,6 +107,8 @@ __cmd_snapshot () {
         shift 2
     done
     _snaptype="${_snaptype:-default}"
+
+    mapfile -t _mountpoints < <(__split "$_cs_mountpoints" "$_snaptype")
 
     for _mountpoint in "${_mountpoints[@]}"; do
         _path="$(__find_path "$_mountpoint")"

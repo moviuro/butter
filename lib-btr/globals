@@ -18,6 +18,7 @@ __set_default_globals () {
 
     declare -ga butter_prop_array
     butter_prop_array=('mountpoint'
+                       'mountpoints.managed.*'
                        'custom.*'
                        'snapshot.*'
                        'version'
