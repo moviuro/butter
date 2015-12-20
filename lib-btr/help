@@ -16,7 +16,7 @@ SYNOPSIS
     $0 snapshot MOUNTPOINT[,...]|ALL [PROP VALUE [...]]
     $0 snapremove MOUNTPOINT[,...] [COUNT [PROP VALUE [...]]]
     $0 set MOUNTPOINT[,...] PROP VALUE [...]
-    $0 get MOUNTPOINT[,...] PROP [PROP [...]]
+    $0 get [-H] [-o values] MOUNTPOINT[,...] PROP [PROP [...]]
     $0 help
     $0 find [PROP VALUE [...]]
 
@@ -148,13 +148,19 @@ DESCRIPTION
         Set the default maximum number of snapshots for /var/log
           # $0 set /var/log snapshot.default.max 3
 
-    $0 get MOUNTPOINT PROP [PROP [...]]
+    $0 get [-H] [-o values] MOUNTPOINT PROP [PROP [...]]
 
-        Get some properties in a nice table. (Not script friendly yet)
+        Get some properties in a nice table.
+
+        Options:
+
+          o -H: suppress headers
+          o -o values: only print values
 
         Example:
 
           # $0 get / uuid snapshot.default.max
+          # $0 get -H /var/log snapshot.daily.max
 
     $0 help
 
