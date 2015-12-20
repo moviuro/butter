@@ -400,7 +400,12 @@ __cmd_remove () {
         unset _new_mountpoints
     done
 
-    __set_one_prop "mountpoints.managed.$_type" \
-        "$(for i in ${_managed_mountpoints[@]}; do printf '%s\n' $i; done)" \
-        "$butter_root/$butter_host"
+    if (( ${#_managed_mountpoints[@]} )); then
+        __set_one_prop "mountpoints.managed.$_type" \
+          "$(for i in ${_managed_mountpoints[@]}; do printf '%s\n' $i; done)" \
+          "$butter_root/$butter_host"
+    else
+        __unset_one_prop "mountpoints.managed.$_type" \
+          "$butter_root/$butter_host"
+    fi
 }
