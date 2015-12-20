@@ -145,7 +145,7 @@ __find_path_uuid () {
     done
 }
 
-__split () {
+__read_targets () {
     if [[ "$1" == ALL ]]; then
         _type="$2"
         mapfile -t _managed_mountpoints < <(

@@ -73,7 +73,7 @@ __parse_cmd () {
 __cmd_add () {
     local _new_mountpoints _type _managed_mountpoints _new_mountpoint _found \
           _mountpoint
-    mapfile -t _new_mountpoints < <(__split "$1")
+    mapfile -t _new_mountpoints < <(__read_targets "$1")
     _type="${2:-default}"
     mapfile -t _managed_mountpoints < <(__get_one_prop \
                              "mountpoints.managed.$_type" "$butter_root/$butter_host")
@@ -153,7 +153,7 @@ __cmd_snapshot () {
     done
     _snaptype="${_snaptype:-default}"
 
-    mapfile -t _mountpoints < <(__split "$_cs_mountpoints" "$_snaptype")
+    mapfile -t _mountpoints < <(__read_targets "$_cs_mountpoints" "$_snaptype")
 
     for _mountpoint in "${_mountpoints[@]}"; do
         _path="$(__find_path "$_mountpoint")"
@@ -232,7 +232,7 @@ __do_snapshot () {
 __cmd_snapremove () {
     local _mountpoints _mountpoint _number _snaplist
 
-    mapfile -t _mountpoints < <(__split "$1")
+    mapfile -t _mountpoints < <(__read_targets "$1")
     _number="${2:-$default_rm_snapshots}"
     shift 2
 
@@ -276,7 +276,7 @@ __cmd_set () {
     local _prop _value _mountpoint _path _err_msg
 
     __require_bootstrapped
-    mapfile -t _mountpoints < <(__split "$1")
+    mapfile -t _mountpoints < <(__read_targets "$1")
     shift
 
     for _mountpoint in "${_mountpoints[@]}"; do
@@ -319,7 +319,7 @@ __cmd_get () {
     done
     shift $((OPTIND-1))
 
-    mapfile -t _mountpoints < <(__split "$1")
+    mapfile -t _mountpoints < <(__read_targets "$1")
     shift
 
     if ((_valuesonly)); then
@@ -385,7 +385,7 @@ __cmd_remove () {
           _new_mountpoints
 
     _type="${2:-default}"
-    mapfile -t _rm_mountpoints < <(__split "$1" "$_type")
+    mapfile -t _rm_mountpoints < <(__read_targets "$1" "$_type")
     mapfile -t _managed_mountpoints < <(
         __get_one_prop "mountpoints.managed.$_type" "$butter_root/$butter_host"
     )
