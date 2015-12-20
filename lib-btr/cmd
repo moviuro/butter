@@ -115,14 +115,24 @@ __cmd_create () {
 }
 
 __cmd_list () {
-    local _paths _path _mountpoint _uuid
+    local _lists _keyvalue _type _mountpoints _mountpoint
 
-    mapfile -t _paths < <(__find_all "snapshot.is" "0" "$@")
-    { printf '%s^%s\n' "MOUNTPOINT" "UUID"
-    for _path in "${_paths[@]}"; do
-        _mountpoint="$(__get_one_prop "mountpoint" "$_path")"
-        _uuid="$(__get_one_prop "uuid" "$_path")"
-        printf '%s^%s\n' "$_mountpoint" "$_uuid"
+    mapfile -t _lists < <(
+        getfattr -d "$butter_root/$butter_host" 2>/dev/null |
+          grep '=' |
+          awk -F. '{ print $7 }'
+    )
+
+    { printf '%s^%s\n' "TYPE" "MOUNTPOINT"
+    for _keyvalue in "${_lists[@]}"; do
+        _type="${_keyvalue%=*}"
+        mapfile -t _mountpoints < <(
+            __get_one_prop "mountpoints.managed.$_type" \
+                           "$butter_root/$butter_host"
+        )
+        for _mountpoint in "${_mountpoints[@]}"; do
+            printf '%s^%s\n' "$_type" "$_mountpoint"
+        done
     done } | column -ts^
 }
 
