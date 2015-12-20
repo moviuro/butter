@@ -3,35 +3,45 @@
 __print_help () {
 cat << __EOH__
 NAME
-    $0 is a btrfs subvolume manager.
+    $0 is a btrfs sinapshot manager.
 
 SYNOPSIS
+    $0 add MOUNTPOINT[,...] [TYPE]
     $0 bootstrap
     $0 create MOUNTPOINT [PROP VALUE [...]]
     $0 destroy MOUNTPOINT
     $0 list
+    $0 remove MOUNTPOINT [TYPE]
     $0 snaplist
-    $0 snapshot MOUNTPOINT [PROP VALUE [...]]
-    $0 snapremove MOUNTPOINT [COUNT [PROP VALUE [...]]]
-    $0 set MOUNTPOINT PROP VALUE [...]
-    $0 get MOUNTPOINT PROP [PROP [...]]
+    $0 snapshot MOUNTPOINT[,...]|ALL [PROP VALUE [...]]
+    $0 snapremove MOUNTPOINT[,...] [COUNT [PROP VALUE [...]]]
+    $0 set MOUNTPOINT[,...] PROP VALUE [...]
+    $0 get MOUNTPOINT[,...] PROP [PROP [...]]
     $0 help
     $0 find [PROP VALUE [...]]
 
 DESCRIPTION
-    $0 manages stuff like properties (stored as extended attributes, see
-    xattr(7), getfattr(1) and setfattr(1)), subvolumes (see btrfs(8)), snapshots
-    and retention.
+    $0 manages snapshots and retention, while making extensive use of extended
+    attributes.
+
+    $0 add MOUNTPOINT [TYPE]
+
+        Adds a mountpoint to the default settings for a given type of snapshot.
+
+        Example:
+
+        After issuing the following command, \`$0 snapshot ALL type hourly\` will
+        snapshot /, /home and /var too.
+          # $0 add /,/home,/var hourly
 
     $0 bootstrap
 
-        This initiates $0, allowing the creation of the root of all subvolumes.
+        Tells you what to do to get started.  Will certainly get dropped.
 
         Typically, you should do this first:
           # mkdir -p /mnt/butter
           # mount -osubvol=/ /mnt/butter
-
-        bootstrap will then create $butter_root/$butter_host
+          # mkdir -p $butter_root/$butter_host
 
     $0 create MOUNTPOINT [PROP VALUE [...]]
 
@@ -51,7 +61,7 @@ DESCRIPTION
     $0 destroy MOUNTPOINT
 
         Will delete all subvolumes that have the given mountpoint (snapshots
-        too)
+        too) that live under the $0 root
 
         Example:
 
@@ -59,13 +69,24 @@ DESCRIPTION
 
     $0 list
 
-        Lists all subvolumes that are managed by $0.  Does not show snapshots.
+        Lists all associations between a snapshot type and mountpoints.
+        It is useful to use it before issuing a snapshot command to "ALL".
+
+        Example:
+
+          # $0 list
+          TYPE     MOUNTPOINT
+          daily    /
+          daily    /home
+          daily    /var
+          default  /var
+          default  /
 
     $0 snaplist
 
         Lists all snapshots.  Does not show subvolumes.
 
-    $0 snapshot MOUNTPOINT [PROP VALUE [...]]
+    $0 snapshot MOUNTPOINT|ALL [PROP VALUE [...]]
 
         Take a snapshot and set some properties, as well as some default values
         for the following properties:
@@ -83,6 +104,9 @@ DESCRIPTION
         Simply snapshot /home
           # $0 snapshot /home
 
+        Snapshot all subvolumes that must (see $0 add) for a given type:
+          # $0 snapshot ALL type daily
+
     $0 snapremove MOUNTPOINT [COUNT [PROP VALUE [...]]]
 
         Removes a number of old snapshots, given some conditions.
@@ -95,8 +119,8 @@ DESCRIPTION
         Remove the 2 oldest snapshots of /
           # $0 snapremove / 2
 
-        Remove the 5 oldest "hourly" snapshots of /home
-          # $0 snapremove /home 5 snapshot.type hourly
+        Remove the 5 oldest "hourly" snapshots of / and /home (10 total)
+          # $0 snapremove /,/home 5 snapshot.type hourly
 
     $0 set MOUNTPOINT PROP VALUE [...]
 
