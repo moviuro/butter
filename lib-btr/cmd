@@ -28,6 +28,10 @@ __parse_cmd () {
             shift
             __cmd_list "$@"
             exit ;;
+        remove)
+            shift
+            __cmd_remove "$@"
+            exit ;;
         snaplist)
             shift
             __cmd_snaplist "$@"
@@ -364,4 +368,29 @@ __require_bootstrapped () {
     findmnt -- "$butter_root" >/dev/null 2>&1 || _ok=0
     [[ -d "$butter_root/$butter_host" ]] || _ok=0
     (( _ok )) || __fatal 'butter was not bootstrapped: run `butter bootstrap`'
+}
+
+__cmd_remove () {
+    local _type _rm_mountpoints _managed_mountpoints _mountpoint _managed \
+          _new_mountpoints
+
+    _type="${2:-default}"
+    mapfile -t _rm_mountpoints < <(__split "$1" "$_type")
+    mapfile -t _managed_mountpoints < <(
+        __get_one_prop "mountpoints.managed.$_type" "$butter_root/$butter_host"
+    )
+
+    for _mountpoint in "${_rm_mountpoints[@]}"; do
+        for _managed in "${_managed_mountpoints[@]}"; do
+            if [[ "$_mountpoint" != "$_managed" ]]; then
+                _new_mountpoints+=("$_managed")
+            fi
+        done
+        _managed_mountpoints=("${_new_mountpoints[@]}")
+        unset _new_mountpoints
+    done
+
+    __set_one_prop "mountpoints.managed.$_type" \
+        "$(for i in ${_managed_mountpoints[@]}; do printf '%s\n' $i; done)" \
+        "$butter_root/$butter_host"
 }
