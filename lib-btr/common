@@ -135,9 +135,15 @@ __find_path_uuid () {
 __split () {
     if [[ "$1" == ALL ]]; then
         _type="$2"
-        mapfile -t _managed_mountpoints < <(__get_one_prop "mountpoints.managed.$_type" "$butter_root/$butter_host")
+        mapfile -t _managed_mountpoints < <(
+            __get_one_prop "mountpoints.managed.$_type" \
+              "$butter_root/$butter_host"
+        )
         if (( ${#_managed_mountpoints[@]} < 1 )); then
-            mapfile -t _managed_mountpoints < <(__get_one_prop "mountpoints.managed.default" "$butter_root/$butter_host")
+            mapfile -t _managed_mountpoints < <(
+                __get_one_prop "mountpoints.managed.default" \
+                  "$butter_root/$butter_host"
+        )
         fi
         for _mountpoint in "${_managed_mountpoints[@]}"; do
             printf '%s\n' "$_mountpoint"
