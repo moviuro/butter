@@ -67,6 +67,8 @@ __parse_cmd () {
 }
 
 __cmd_add () {
+    local _new_mountpoints _type _managed_mountpoints _new_mountpoint _found \
+          _mountpoint
     mapfile -t _new_mountpoints < <(__split "$1")
     _type="${2:-default}"
     mapfile -t _managed_mountpoints < <(__get_one_prop \
