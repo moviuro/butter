@@ -3,7 +3,7 @@
 __print_help () {
 cat << __EOH__
 NAME
-    $0 is a btrfs sinapshot manager.
+    $0 is a btrfs snapshot manager.
 
 SYNOPSIS
     $0 add MOUNTPOINT[,...] [TYPE]
