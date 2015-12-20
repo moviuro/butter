@@ -27,6 +27,7 @@ DESCRIPTION
     $0 add MOUNTPOINT [TYPE]
 
         Adds a mountpoint to the default settings for a given type of snapshot.
+        See also $0 remove.
 
         Example:
 
@@ -81,6 +82,14 @@ DESCRIPTION
           daily    /var
           default  /var
           default  /
+
+    $0 remove MOUNTPOINT[,...] [TYPE]
+
+        Removes a mountpoint from the default list for a given snapshot type.
+        See also $0 add.
+
+        Example:
+          # $0 remove /var yearly
 
     $0 snaplist
 
