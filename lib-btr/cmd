@@ -258,17 +258,23 @@ __cmd_snaplist () {
 
     mapfile -t _snaplist < <(__find_all "snapshot.is" "1")
     {
-    printf '%s^%s^%s^%s\n' 'MOUNTPOINT' 'TYPE' 'DATE' 'UUID'
-    {
-    for _subvolume in "${_snaplist[@]}"; do
-        _mountpoint="$(__get_one_prop "mountpoint" "$_subvolume")"
-        _uuid="$(__get_one_prop "uuid" "$_subvolume")"
-        _type="$(__get_one_prop "snapshot.type" "$_subvolume")"
-        _timestamp="$(__get_one_prop "snapshot.timestamp" "$_subvolume")"
-        _date="$(date --date=@"$_timestamp")"
-        printf '%s^%s^%s^%s\n' "$_mountpoint" "$_type" "$_date" "$_uuid"
-    done
-    } | sort -n
+      printf '%s^%s^%s^%s\n' 'MOUNTPOINT' 'TYPE' 'DATE' 'UUID'
+      {
+        for _subvolume in "${_snaplist[@]}"; do
+            _mountpoint="$(__get_one_prop "mountpoint" "$_subvolume")"
+            _uuid="$(__get_one_prop "uuid" "$_subvolume")"
+            _type="$(__get_one_prop "snapshot.type" "$_subvolume")"
+            _timestamp="$(__get_one_prop "snapshot.timestamp" "$_subvolume")"
+            _date="$(date --date=@"$_timestamp")"
+            printf '%s^%s^%s^%s\n' "$_mountpoint" "$_type" "$_timestamp" \
+              "$_uuid"
+        done
+      } |
+        sort -n |
+        while IFS=^ read -r _mountpoint _type _timestamp _uuid; do
+            printf '%s^%s^%s^%s\n' "$_mountpoint" "$_type" \
+              "$(date --date="@$_timestamp")" "$_uuid"
+        done
     } | column -ts^
 }
 
