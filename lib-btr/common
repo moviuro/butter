@@ -39,7 +39,11 @@ __set_one_prop () {
     _path="$3"
 
     __require_in_props "$_prop"
-    __set "$butter_prop_prefix"."$_prop" "$_value" "$_path"
+    if [[ -z "$_value" ]]; then
+        __unset "$butter_prop_prefix"."$_prop" "$_path"
+    else
+        __set "$butter_prop_prefix"."$_prop" "$_value" "$_path"
+    fi
 }
 
 __unset_one_prop () {
