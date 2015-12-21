@@ -254,7 +254,7 @@ __cmd_snapremove () {
 
 
 __cmd_snaplist () {
-    local _snaplist _subvolume _mountpoint _uuid _type _date
+    local _snaplist _subvolume _mountpoint _uuid _type _timestamp _date
 
     mapfile -t _snaplist < <(__find_all "snapshot.is" "1")
     {
@@ -264,8 +264,8 @@ __cmd_snaplist () {
         _mountpoint="$(__get_one_prop "mountpoint" "$_subvolume")"
         _uuid="$(__get_one_prop "uuid" "$_subvolume")"
         _type="$(__get_one_prop "snapshot.type" "$_subvolume")"
-        _date="$(date --date=@"$(__get_one_prop "snapshot.timestamp" \
-          "$_subvolume")")"
+        _timestamp="$(__get_one_prop "snapshot.timestamp" "$_subvolume")"
+        _date="$(date --date=@"$_timestamp")"
         printf '%s^%s^%s^%s\n' "$_mountpoint" "$_type" "$_date" "$_uuid"
     done
     } | sort -n
