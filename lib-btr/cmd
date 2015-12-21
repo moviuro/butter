@@ -254,11 +254,21 @@ __cmd_snapremove () {
 
 
 __cmd_snaplist () {
-    local _snaplist _subvolume _mountpoint _uuid _type _timestamp _date
+    local _header _opt _snaplist _subvolume _mountpoint _uuid _type _timestamp \
+          _date
+
+    _header=1
+    while getopts ":H" _opt; do
+        case "$_opt" in
+            H) _header=0 ;;
+        esac
+    done
 
     mapfile -t _snaplist < <(__find_all "snapshot.is" "1")
     {
-      printf '%s^%s^%s^%s\n' 'MOUNTPOINT' 'TYPE' 'DATE' 'UUID'
+      if ((_header)); then
+          printf '%s^%s^%s^%s\n' 'MOUNTPOINT' 'TYPE' 'DATE' 'UUID'
+      fi
       {
         for _subvolume in "${_snaplist[@]}"; do
             _mountpoint="$(__get_one_prop "mountpoint" "$_subvolume")"
