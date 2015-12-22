@@ -115,7 +115,7 @@ __cmd_create () {
 }
 
 __cmd_list () {
-    local _lists _keyvalue _type _mountpoints _mountpoint
+    local _lists _keyvalue _type _mountpoints _mountpoint _max
 
     mapfile -t _lists < <(
         getfattr -d "$butter_root/$butter_host" 2>/dev/null |
@@ -123,7 +123,7 @@ __cmd_list () {
           awk -F. '{ print $7 }'
     )
 
-    { printf '%s^%s\n' "TYPE" "MOUNTPOINT"
+    { printf '%s^%s^%s\n' "TYPE" "MOUNTPOINT" "NUMBER"
     for _keyvalue in "${_lists[@]}"; do
         _type="${_keyvalue%=*}"
         mapfile -t _mountpoints < <(
@@ -131,7 +131,8 @@ __cmd_list () {
                            "$butter_root/$butter_host"
         )
         for _mountpoint in "${_mountpoints[@]}"; do
-            printf '%s^%s\n' "$_type" "$_mountpoint"
+            _max="$(__get_one_prop "snapshot.$_type.max" "$_mountpoint")"
+            printf '%s^%s^%s\n' "$_type" "$_mountpoint" "$_max"
         done
     done } | column -ts^
 }
