@@ -24,9 +24,9 @@ __parse_cmd () {
             __require_root
             __cmd_create "$@"
             exit ;;
-        list)
+        snapconfig)
             shift
-            __cmd_list "$@"
+            __cmd_snapconfig "$@"
             exit ;;
         remove)
             shift
@@ -114,7 +114,7 @@ __cmd_create () {
     __cmd_set "$_mountpoint" "$@"
 }
 
-__cmd_list () {
+__cmd_snapconfig () {
     local _lists _keyvalue _type _mountpoints _mountpoint _max
 
     mapfile -t _lists < <(

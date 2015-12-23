@@ -68,9 +68,10 @@ DESCRIPTION
 
           # $0 destroy /var
 
-    $0 list
+    $0 snapconfig
 
-        Lists all associations between a snapshot type and mountpoints.
+        Shows snapshot type and mountpoints configuration, created using add
+        and remove.
         It is useful to use it before issuing a snapshot command to "ALL".
 
         Example:
