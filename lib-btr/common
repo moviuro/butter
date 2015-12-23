@@ -72,8 +72,11 @@ __require_in_props () {
 }
 
 __escape () {
-    # TODO: better escaping function? (systemd-independant)
-    systemd-escape -- "$1"
+    if command -v systemd-escape >/dev/null 2>&1; then
+        systemd-escape -- "$1"
+    else
+        base64 <<< "$1"
+    fi
 }
 
 __find_path () {
