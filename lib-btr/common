@@ -153,6 +153,7 @@ __find_path_uuid () {
 }
 
 __read_targets () {
+    local _managed_mountpoints _mountpoint
     if [[ "$1" == ALL ]]; then
         _type="$2"
         mapfile -t _managed_mountpoints < <(

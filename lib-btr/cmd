@@ -73,10 +73,12 @@ __parse_cmd () {
 __cmd_add () {
     local _new_mountpoints _type _managed_mountpoints _new_mountpoint _found \
           _mountpoint
+
     mapfile -t _new_mountpoints < <(__read_targets "$1")
     _type="${2:-default}"
-    mapfile -t _managed_mountpoints < <(__get_one_prop \
-                             "mountpoints.managed.$_type" "$butter_root/$butter_host")
+    mapfile -t _managed_mountpoints < <(
+        __get_one_prop "mountpoints.managed.$_type" "$butter_root/$butter_host"
+    )
 
     for _new_mountpoint in "${_new_mountpoints[@]}"; do
         _found=0
@@ -385,7 +387,9 @@ __cmd_find () {
 }
 
 __require_root () {
-    [[ -w "$butter_root" ]] || __fatal "Can't write to $butter_root"
+    if ! [[ -w "$butter_root/$butter_host" ]]; then
+        __fatal "Can't write to $butter_root"
+    fi
 }
 
 __require_bootstrapped () {
