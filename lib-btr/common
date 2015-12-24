@@ -9,14 +9,17 @@ __info () {
     printf '%s\nII %s\n' "Information" "$1"
 }
 
+# getfattr(1) wrapper
 __get () {
     getfattr --only-values --name "$1" -- "$2" 2>/dev/null
 }
 
+# setfattr(1) wrapper
 __set () {
     setfattr --name "$1" --value "$2" -- "$3"
 }
 
+# setfattr(1) wrapper
 __unset () {
     setfattr --remove="$1" -- "$2" 2>/dev/null
 }
@@ -55,6 +58,7 @@ __unset_one_prop () {
     __unset "$butter_prop_prefix.$_prop" "$_path"
 }
 
+# Make sure a property is allowed
 __require_in_props () {
     local _prop _found _item
 
@@ -71,6 +75,12 @@ __require_in_props () {
     (( _found )) ||  __fatal "Unknown property: $_prop"
 }
 
+# Transform a path to a string that is usable as a directory name.
+# This requires among other things changing '/' to something else.
+# Using systemd-escape(1) is the easiest since it can be reverted and the
+# mountpoints' names stay readable: e.g. '-home'
+# Using base64(1) is also easy since it ought to be available everywhere;
+# however the names are not human-friendly: e.g. 'L2hvbWUK'
 __escape () {
     if command -v systemd-escape >/dev/null 2>&1; then
         systemd-escape -- "$1"
@@ -80,6 +90,7 @@ __escape () {
 }
 
 __find_path () {
+    # Argument starts with a / and is an absolute path or is an UUID
     if [[ "$1" == /* ]]; then
         __find_path_mountpoint "$@"
     else
@@ -152,6 +163,10 @@ __find_path_uuid () {
     done
 }
 
+# Returns a '\n'-seperated list of paths submitted by the user.
+# Two cases:
+#  1) comma seperated paths, e.g.: /,/home,/var
+#  2) "ALL"-keyword, followed by a snapshot type, e.g.: ALL daily
 __read_targets () {
     local _managed_mountpoints _mountpoint
     if [[ "$1" == ALL ]]; then
