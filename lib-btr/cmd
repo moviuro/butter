@@ -121,7 +121,7 @@ __cmd_snapconfig () {
 
     mapfile -t _lists < <(
         getfattr -d "$butter_root/$butter_host" 2>/dev/null |
-          grep '=' |
+          grep -E "$butter_prop_prefix.mountpoints.managed."'[^.]*=' |
           awk -F. '{ print $7 }'
     )
 
