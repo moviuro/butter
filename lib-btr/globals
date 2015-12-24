@@ -13,7 +13,6 @@ __set_default_globals () {
         butter_host="$(< /etc/machine-id)"
     else
         butter_host="$(uname -n)"
-        __info "Could not find /etc/machine-id: we use $butter_host as hostname"
     fi
 
     declare -ga butter_prop_array
