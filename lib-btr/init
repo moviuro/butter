@@ -17,13 +17,16 @@ __init () {
 }
 
 __check_version () {
-    [[ "$(__get_one_prop "version" "$butter_root")" == "$butter_version" ]]
+    local _current
+
+    _current="$(__get_one_prop "version" "$butter_root/$butter_host")"
+    [[ "$_current" == "$butter_version" ]]
 }
 
 __update () {
     __require_root_priv
     # We update the properties of the root
-    __set_one_prop "version" "$butter_version" "$butter_root"
+    __set_one_prop "version" "$butter_version" "$butter_root/$butter_host"
     # We update the properties of the managed sub-volumes
     # ...
 }
