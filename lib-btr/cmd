@@ -99,11 +99,12 @@ __cmd_add () {
 }
 
 __cmd_create () {
-    local _mountpoint _escaped_name _path
+    local _mountpoint _escaped_name _path _uuid
 
     _mountpoint="$1"
     _escaped_name="$(__escape "$_mountpoint")"
     _path="$butter_root/$butter_host/$_escaped_name"
+    _uuid="$(uuidgen -r)"
     shift
 
     __require_bootstrapped
@@ -111,7 +112,7 @@ __cmd_create () {
     __set_one_prop "mountpoint" "$_mountpoint" "$_path"
     __set_one_prop "snapshot.default.max" "5" "$_path"
     __set_one_prop "snapshot.is" "0" "$_path"
-    __set_one_prop "uuid" "$(uuidgen -r)" "$_path"
+    __set_one_prop "uuid" "$_uuid" "$_path"
 
     __cmd_set "$_mountpoint" "$@"
 }
