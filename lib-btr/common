@@ -188,3 +188,15 @@ __read_targets () {
         tr "," "\n" <<< "$1"
     fi
 }
+
+__has_root_priv () {
+    [[ -w "$butter_root/$butter_host" ]]
+}
+
+# Fails loudly if we don't have a root directory for butter
+# Fails loudly if we don't have enough privileges.
+__require_root_priv () {
+    if ! __has_root_priv; then
+        __fatal "Can't write to $butter_root"
+    fi
+}

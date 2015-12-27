@@ -11,7 +11,9 @@ __init () {
 
     # We check that the root has the same prog version as the current butter
     # If not, then force update of properties
-    __check_version || __update
+    if __has_root_priv; then
+        __check_version || __update
+    fi
 }
 
 __check_version () {
@@ -19,7 +21,7 @@ __check_version () {
 }
 
 __update () {
-    __require_root
+    __require_root_priv
     # We update the properties of the root
     __set_one_prop "version" "$butter_version" "$butter_root"
     # We update the properties of the managed sub-volumes

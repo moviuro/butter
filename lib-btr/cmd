@@ -11,17 +11,16 @@ __parse_cmd () {
     case "$1" in
         add)
             shift
-            __require_root
+            __require_root_priv
             __cmd_add "$@"
             exit ;;
         bootstrap)
             shift
-            __require_root
             __cmd_bootstrap "$@"
             exit ;;
         create)
             shift
-            __require_root
+            __require_root_priv
             __cmd_create "$@"
             exit ;;
         snapconfig)
@@ -30,6 +29,7 @@ __parse_cmd () {
             exit ;;
         remove)
             shift
+            __require_root_priv
             __cmd_remove "$@"
             exit ;;
         snaplist)
@@ -38,17 +38,17 @@ __parse_cmd () {
             exit ;;
         snapshot)
             shift
-            __require_root
+            __require_root_priv
             __cmd_snapshot "$@"
             exit ;;
         snapremove)
             shift
-            __require_root
+            __require_root_priv
             __cmd_snapremove "$@"
             exit ;;
         set)
             shift
-            __require_root
+            __require_root_priv
             __cmd_set "$@"
             exit ;;
         get)
@@ -385,12 +385,6 @@ EOB
 
 __cmd_find () {
     __find_all "$@"
-}
-
-__require_root () {
-    if ! [[ -w "$butter_root/$butter_host" ]]; then
-        __fatal "Can't write to $butter_root"
-    fi
 }
 
 __require_bootstrapped () {
