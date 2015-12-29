@@ -175,6 +175,9 @@ __read_targets () {
             __get_one_prop "mountpoints.managed.$_type" \
               "$butter_root/$butter_host"
         )
+        # In case we have a type specified but the mountpoints.managed.$_type
+        # property is unset, we revert back to the mountpoints in
+        # mountpoints.managed.default
         if (( ${#_managed_mountpoints[@]} < 1 )); then
             mapfile -t _managed_mountpoints < <(
                 __get_one_prop "mountpoints.managed.default" \
