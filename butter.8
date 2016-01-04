@@ -6,19 +6,19 @@
 .SH SYNOPSIS
 .nf
 .fam C
-  \fBbutter\fP \fIadd\fP MOUNTPOINT[,\.\.\.] [\fITYPE\fP]
-  \fBbutter\fP \fIbootstrap\fP
-  \fBbutter\fP \fIcreate\fP \fIMOUNTPOINT\fP [\fIPROP\fP \fIVALUE\fP [\.\.\.]]
-  \fBbutter\fP \fIdestroy\fP \fIMOUNTPOINT\fP
-  \fBbutter\fP \fIlist\fP
-  \fBbutter\fP \fIremove\fP \fIMOUNTPOINT\fP [\fITYPE\fP]
-  \fBbutter\fP \fIsnaplist\fP
-  \fBbutter\fP \fIsnapshot\fP \fIMOUNTPOINT\fP[,\.\.\.]|ALL [\fIPROP\fP \fIVALUE\fP [\.\.\.]]
-  \fBbutter\fP \fIsnapremove\fP \fIMOUNTPOINT\fP[,\.\.\.] [\fICOUNT\fP [\fIPROP\fP \fIVALUE\fP [\.\.\.]]]
-  \fBbutter\fP \fIset\fP \fIMOUNTPOINT\fP[,\.\.\.] \fIPROP\fP \fIVALUE\fP [\.\.\.]
-  \fBbutter\fP \fIget\fP [\fB-H\fP] [\fB-o\fP \fIvalues\fP] \fIMOUNTPOINT\fP[,\.\.\.] \fIPROP\fP [\fIPROP\fP [\.\.\.]]
-  \fBbutter\fP \fIhelp\fP
-  \fBbutter\fP \fIfind\fP [\fIPROP\fP \fIVALUE\fP [\.\.\.]]
+  \fBbutter\fP [\fB-d\fP] \fIadd\fP MOUNTPOINT[,\.\.\.] [\fITYPE\fP]
+  \fBbutter\fP [\fB-d\fP] \fIbootstrap\fP
+  \fBbutter\fP [\fB-d\fP] \fIcreate\fP \fIMOUNTPOINT\fP [\fIPROP\fP \fIVALUE\fP [\.\.\.]]
+  \fBbutter\fP [\fB-d\fP] \fIdestroy\fP \fIMOUNTPOINT\fP
+  \fBbutter\fP [\fB-d\fP] \fIlist\fP
+  \fBbutter\fP [\fB-d\fP] \fIremove\fP \fIMOUNTPOINT\fP [\fITYPE\fP]
+  \fBbutter\fP [\fB-d\fP] \fIsnaplist\fP
+  \fBbutter\fP [\fB-d\fP] \fIsnapshot\fP \fIMOUNTPOINT\fP[,\.\.\.]|ALL [\fIPROP\fP \fIVALUE\fP [\.\.\.]]
+  \fBbutter\fP [\fB-d\fP] \fIsnapremove\fP \fIMOUNTPOINT\fP[,\.\.\.] [\fICOUNT\fP [\fIPROP\fP \fIVALUE\fP [\.\.\.]]]
+  \fBbutter\fP [\fB-d\fP] \fIset\fP \fIMOUNTPOINT\fP[,\.\.\.] \fIPROP\fP \fIVALUE\fP [\.\.\.]
+  \fBbutter\fP [\fB-d\fP] \fIget\fP [\fB-H\fP] [\fB-o\fP \fIvalues\fP] \fIMOUNTPOINT\fP[,\.\.\.] \fIPROP\fP [\fIPROP\fP [\.\.\.]]
+  \fBbutter\fP [\fB-d\fP] \fIhelp\fP
+  \fBbutter\fP [\fB-d\fP] \fIfind\fP [\fIPROP\fP \fIVALUE\fP [\.\.\.]]
 
 .fam T
 .fi
@@ -28,6 +28,14 @@
 \fBbutter\fP manages snapshots and retention, while making extensive use of extended
 attributes.
 .PP
+\fBbutter\fP \fB-d\fP [COMMAND [ARGS\.\.\.]]
+.PP
+.nf
+.fam C
+        Run butter in debug mode (bash(1)'s set -x)
+
+.fam T
+.fi
 \fBbutter\fP \fIadd\fP \fIMOUNTPOINT\fP [\fITYPE\fP]
 .PP
 .nf

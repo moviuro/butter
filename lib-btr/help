@@ -6,23 +6,27 @@ NAME
     butter is a btrfs snapshot manager.
 
 SYNOPSIS
-    butter add MOUNTPOINT[,...] [TYPE]
-    butter bootstrap
-    butter create MOUNTPOINT [PROP VALUE [...]]
-    butter destroy MOUNTPOINT
-    butter list
-    butter remove MOUNTPOINT [TYPE]
-    butter snaplist
-    butter snapshot MOUNTPOINT[,...]|ALL [PROP VALUE [...]]
-    butter snapremove MOUNTPOINT[,...] [COUNT [PROP VALUE [...]]]
-    butter set MOUNTPOINT[,...] PROP VALUE [...]
-    butter get [-H] [-o values] MOUNTPOINT[,...] PROP [PROP [...]]
-    butter help
-    butter find [PROP VALUE [...]]
+    butter [-d] add MOUNTPOINT[,...] [TYPE]
+    butter [-d] bootstrap
+    butter [-d] create MOUNTPOINT [PROP VALUE [...]]
+    butter [-d] destroy MOUNTPOINT
+    butter [-d] list
+    butter [-d] remove MOUNTPOINT [TYPE]
+    butter [-d] snaplist
+    butter [-d] snapshot MOUNTPOINT[,...]|ALL [PROP VALUE [...]]
+    butter [-d] snapremove MOUNTPOINT[,...] [COUNT [PROP VALUE [...]]]
+    butter [-d] set MOUNTPOINT[,...] PROP VALUE [...]
+    butter [-d] get [-H] [-o values] MOUNTPOINT[,...] PROP [PROP [...]]
+    butter [-d] help
+    butter [-d] find [PROP VALUE [...]]
 
 DESCRIPTION
     butter manages snapshots and retention, while making extensive use of extended
     attributes.
+
+    butter -d [COMMAND [ARGS...]]
+
+        Run butter in debug mode (bash(1)'s set -x)
 
     butter add MOUNTPOINT [TYPE]
 
