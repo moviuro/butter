@@ -45,9 +45,14 @@ DESCRIPTION
         Tells you what to do to get started.  Will certainly get dropped.
 
         Typically, you should do this first:
-          # mkdir -p /mnt/butter
-          # mount -osubvol=/ /mnt/butter
-          # mkdir -p $butter_root/$butter_host
+          # mkdir -p \$butter_root
+          # mount -osubvol=/ \$butter_root
+          # mkdir -p \$butter_root/\$butter_host
+
+        Default values are:
+          o \$butter_root=/mnt/butter
+          o \$butter_host=\$(\< /etc/machine-id) with systemd
+          o \$butter_host=\$(uname -n) without systemd
 
     butter create MOUNTPOINT [PROP VALUE [...]]
 
