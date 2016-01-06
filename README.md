@@ -34,3 +34,17 @@ butter snapshot ALL type hourly
 - Why butter?
 *Because ButterFS, I guess.*
 
+# Installation
+You can run a "portable" version pretty easily:
+```sh
+git clone git@github.com:moviuro/butter.git
+cd butter
+./butter help
+```
+
+If you run Archlinux, there is a PKGBUILD available on the [AUR](https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=butter).
+TL;DR:
+- `cp butter /usr/bin/`
+- `mkdir -p /usr/lib/butter/ && cp lib-btr/* /usr/lib/butter/`
+- `butter.8` goes to wherever manpages go
+- `LICENSE` goes to wherever licenses go
