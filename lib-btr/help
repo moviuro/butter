@@ -201,7 +201,7 @@ __EOH__
 __cmd_helpconfig () {
     cat << __EOH__
 NAME
-    buterrc - butter configuration
+    butterrc - butter configuration
 
 SYNOPSIS
     Set some global variables for butter.
