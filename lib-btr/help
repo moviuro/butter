@@ -18,6 +18,7 @@ SYNOPSIS
     butter [-d] set MOUNTPOINT[,...] PROP VALUE [...]
     butter [-d] get [-H] [-o values] MOUNTPOINT[,...] PROP [PROP [...]]
     butter [-d] help
+    butter [-d] helpconfig
     butter [-d] find [PROP VALUE [...]]
 
 DESCRIPTION
@@ -180,6 +181,10 @@ DESCRIPTION
 
         Display this help text
 
+    butter helpconfig
+
+        Display the butterrc(5) help text
+
     butter find [PROP VALUE [...]]
 
         Find snapshots or subvolumes that match PROP=VALUE for submitted
@@ -189,6 +194,64 @@ DESCRIPTION
 
         Find snapshots with type "foo"
           # butter find snapshot.is 1 snapshot.type foo
+
+__EOH__
+}
+
+__cmd_helpconfig () {
+    cat << __EOH__
+NAME
+    buterrc - butter configuration
+
+SYNOPSIS
+    Set some global variables for butter.
+
+DESCRIPTION
+    butterrc is a bash shell script that will be sourced after butter sets its
+    built-in global variables.
+
+PATHS
+    butter_root
+
+      This is where your btrfs root should be mounted.
+
+      default value is /mnt/butter.
+
+    butter_host
+
+      This will identify your host in the \$butter_root folder.
+
+      default value is either:
+        o The value of /etc/machine-id; should the file exist
+        o The output of \`uname -n\`
+
+PROPERTIES
+    butter_prop_prefix
+
+      This will be used for all properties used by butter.  It must begin with
+      "^user." (see xattr(7)).
+
+      default value is "user.be.popho.butter"
+
+    default_max_snapshots
+
+      This number is the default number of snapshots to keep for any given
+      subvolume.  If there are no specific instructions given to butter(8)
+      while snapshotting, this number will be used.
+
+      default value is "5"
+
+    default_rm_snapshots
+
+      This number is the default number of snapshots to remove when using
+      \`butter snapremove\`, if no specific instructions are given.
+
+      default value is "1"
+
+    butter_prop_array
+
+      This array contains a list of allowed properties to set on the different
+      subvolumes that butter will handle.
 
 __EOH__
 }
