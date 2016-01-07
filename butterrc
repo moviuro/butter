@@ -26,4 +26,5 @@ my_globals () {
 
 }
 
-#myglobals
+# Uncomment the following line for your changes to take effect
+#my_globals
