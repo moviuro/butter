@@ -48,3 +48,7 @@ TL;DR:
 - `mkdir -p /usr/lib/butter/ && cp lib-btr/* /usr/lib/butter/`
 - `butter.8` goes to wherever manpages go
 - `LICENSE` goes to wherever licenses go
+
+# Bugs
+If you can't patch the bugs you find, please open an issue on github describing
+the issue and append the output of the `-d` switch on butter.
