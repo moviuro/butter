@@ -126,13 +126,13 @@ __cmd_snapconfig () {
 
     mapfile -t _lists < <(
         getfattr -d "$butter_root/$butter_host" 2>/dev/null |
-          grep -E "$butter_prop_prefix.mountpoints.managed."'[^.]*=' |
-          awk -F. '{ print $7 }'
+          grep -E "$butter_prop_prefix.mountpoints.managed."'[^.]*='
     )
 
     { printf '%s^%s^%s\n' "TYPE" "MOUNTPOINT" "NUMBER"
     for _keyvalue in "${_lists[@]}"; do
         _type="${_keyvalue%=*}"
+        _type="${_type##*.}"
         mapfile -t _mountpoints < <(
             __get_one_prop "mountpoints.managed.$_type" \
                            "$butter_root/$butter_host"
