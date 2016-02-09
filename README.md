@@ -51,4 +51,4 @@ TL;DR:
 
 # Bugs
 If you can't patch the bugs you find, please open an issue on github describing
-the issue and append the output of the `-d` switch on butter.
+the issue and append the output of `butter -d` that triggers the bug you found.
