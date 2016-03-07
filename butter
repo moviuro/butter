@@ -24,6 +24,7 @@ fi
 # Find libs
 [[ -d ./lib-btr && -r ./lib-btr ]] && _lib_dir="./lib-btr"
 [[ -d /usr/lib/butter && -r /usr/lib/butter ]] && _lib_dir="/usr/lib/butter"
+[[ -d /usr/local/lib/butter && -r /usr/local/lib/butter ]] && _lib_dir="/usr/lib/butter"
 
 # If libs are not found, fail
 if [[ -z "$_lib_dir" ]] ; then
