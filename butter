@@ -12,7 +12,7 @@ if [[ "$1" == "-d" ]] || [[ "$1" == "--debug" ]]; then
     shift
 fi
 
-butter_version="butter v9"
+butter_version="butter v10"
 pid=$$
 
 # Print version and exit
