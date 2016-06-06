@@ -1,0 +1,9 @@
+[Unit]
+Description=butter snapshot for %I type
+
+[Service]
+Nice=19
+IOSchedulingClass=2
+IOSchedulingPriority=7
+Type=oneshot
+ExecStart=/usr/bin/butter snapshot ALL type %I
