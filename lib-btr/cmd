@@ -179,7 +179,8 @@ __cmd_snapshot () {
 
             # We make sure to honor "snapshot.$_snaptype.max"
             mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" \
-              "snapshot.type" "$_snaptype" "mountpoint" "$_mountpoint"\
+              "snapshot.type" "$_snaptype" \
+              "mountpoint" "$_mountpoint" \
               "snapshot.is" "1" \
               "host" "$butter_host")
 
