@@ -117,6 +117,7 @@ __cmd_create () {
     __set_one_prop "snapshot.default.max" "5" "$_path"
     __set_one_prop "snapshot.is" "0" "$_path"
     __set_one_prop "uuid" "$_uuid" "$_path"
+    __set_one_prop "host" "$butter_host" "$_path"
 
     __cmd_set "$_mountpoint" "$@"
 }
@@ -179,7 +180,8 @@ __cmd_snapshot () {
             # We make sure to honor "snapshot.$_snaptype.max"
             mapfile -t _snaplist < <(__find_all_sort "snapshot.timestamp" \
               "snapshot.type" "$_snaptype" "mountpoint" "$_mountpoint"\
-              "snapshot.is" "1")
+              "snapshot.is" "1" \
+              "host" "$butter_host")
 
             if (( "${#_snaplist[@]}" > "$_max" )); then
                 _to_delete=$(( ${#_snaplist[@]} - $_max ))
@@ -198,13 +200,14 @@ __do_snapshot () {
 
     _mountpoint="$1"
     _path="$(__find_path "$_mountpoint")"
+    _fs_uuid="$(__fs_uuid "$_path")"
     _escaped_path="$(__escape "$_path")"
 
     shift
 
     _date="$(date "+%s")"
     _uuid="$(uuidgen -r)"
-    _to_path="$butter_root/$butter_host/$_escaped_path@$_uuid"
+    _to_path="$butter_root/$butter_host/$_fs_uuid/__butter/$_escaped_path@$_uuid"
     _tmp_path="${_to_path}.tmp"
 
     # a temporary snapshot because btrfs(8) still sucks
@@ -226,6 +229,8 @@ __do_snapshot () {
     __set_one_prop "snapshot.is" "1" "$_tmp_path"
     # we set the snapshot's mountpoint
     __set_one_prop "mountpoint" "$_mountpoint" "$_tmp_path"
+    # we set the snapshot's original host
+    __set_one_prop "host" "$butter_host" "$_tmp_path"
 
     # we set the snapshot type if none was set
     if ! __get_one_prop "snapshot.type" "$_tmp_path" >/dev/null 2>&1; then
@@ -380,9 +385,18 @@ __cmd_bootstrap () {
 Actually, I won't bootstrap on my own. (Too complicated)
 Do this:
 
- # mkdir "$butter_root"
- # mount /dev/sdNX -osubvol=/ "$butter_root"
+ ## This is for your current host
  # mkdir -p "$butter_root/$butter_host"
+
+ ## This is for human-friendliness
+ # ln -s "$butter_root/$butter_host" "$butter_root/$(uname -n)"
+
+ ## Now we mount available butter filesystems
+ # for _volume in $(lsblk -fl|awk 'ORS=" " { if ($2 ~ "btrfs") print $3 }'); do
+     mkdir "$butter_root/$(uname -n)/\$_volume"
+     mount -osubvol=/ /dev/disk/by-uuid/\$_volume \$!
+     mkdir "$butter_root/$(uname -n)/\$_volume/__butter"
+   done
 
 EOB
 }
@@ -393,10 +407,12 @@ __cmd_find () {
 
 __require_bootstrapped () {
     local _ok
-    _ok=1
+    _ok=0
 
-    findmnt -- "$butter_root" >/dev/null 2>&1 || _ok=0
-    [[ -d "$butter_root/$butter_host" ]] || _ok=0
+    if [[ -d "$butter_root/$butter_host" ]]; then
+        cd "$butter_root/$butter_host"
+        (( "$(find -maxdepth 2 -type d -name '__butter' 2>/dev/null | wc -l)" )) && _ok=1
+    fi
     (( _ok )) || __fatal 'butter was not bootstrapped: run `butter bootstrap`'
 }
 

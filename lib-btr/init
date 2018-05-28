@@ -4,9 +4,18 @@ __init () {
     # We set global variables first
     __set_globals
 
-    # Is the root mounted?
-    if ! findmnt $butter_root >/dev/null 2>&1; then
-        __fatal "$butter_root is not mounted"
+    # Make sure that all filesystems are mounted
+    # TODO: it is probably not needed that ALL btrfs filesystems be mounted
+    local _fs _fses _ret=0
+    mapfile -t _fses < <(lsblk -fl | awk '{ if ( $2 ~ "btrfs" ) print $3 }')
+    for _fs in "${_fses[@]}"; do
+        if ! [[ -d "$butter_root/$butter_host/$_fs/__butter" ]]; then
+            ((_ret+=1))
+            __info "$butter_root/$butter_host/$_fs/__butter is not a dir"
+        fi
+    done
+    if (( _ret > 0 )); then
+        __fatal "See above messages"
     fi
 
     # We check that the root has the same prog version as the current butter

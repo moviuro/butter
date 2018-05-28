@@ -21,7 +21,8 @@ __set_default_globals () {
                        'custom.*'
                        'snapshot.*'
                        'version'
-                       'uuid')
+                       'uuid'
+                       'host')
 }
 
 __set_globals () {

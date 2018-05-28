@@ -114,9 +114,13 @@ __find_path_mountpoint () {
 # Returns a \n-seperated list of paths which match some properties
 # usage: __find_all [PROP VALUE [...]]
 __find_all () {
-    local _path _show _prop _thing _value
-    for _path in "$butter_root/$butter_host/"*; do
-        _show=1
+    local _path _to_save _prop _thing _value
+
+    # In an associative array, we store UUID->path, so that even if we cross the
+    # same UUID more than once, it only has one path.
+    declare -A _to_show
+    for _path in "$butter_root/"*/*/__butter/*; do
+        _to_save=1
         _prop=""
         for _thing in "$@"; do
             if [[ -z "$_prop" ]]; then
@@ -124,15 +128,18 @@ __find_all () {
             else
                 _value="$_thing"
                 if [[ "$(__get_one_prop "$_prop" "$_path")" != "$_value" ]]; then
-                    _show=0
+                    _to_save=0
                     break
                 fi
                 _prop=""
             fi
         done
-        if (( _show )); then
-            printf '%s\n' "$_path"
+        if (( _to_save )); then
+            _to_show["$(__get_one_prop "uuid" "$_path")"]="$_path"
         fi
+    done
+    for _path in "${_to_show[@]}"; do
+        printf '%s\n' "$_path"
     done
 }
 
@@ -155,7 +162,7 @@ __find_all_sort () {
 __find_path_uuid () {
     local _path _show _prop _thing _value
     _uuid="$1"
-    for _path in "$butter_root/$butter_host/"*; do
+    for _path in "$butter_root/$butter_host/"*/*; do
         if [[ "$(__get_one_prop "uuid" "$_path")" == "$_uuid"* ]]; then
             printf '%s\n' "$_path"
             return
@@ -202,4 +209,27 @@ __require_root_priv () {
     if ! __has_root_priv; then
         __fatal "Can't write to $butter_root"
     fi
+}
+
+# Returns a FS UUID
+# Usage: __fs_uuid <path>
+# Returns: the UUID of the volume on which <path> is
+__fs_uuid () {
+  local _path _uuid _abort
+
+  _path="$1"
+  while [[ -z "$_uuid" ]]; do
+      if [[ -z "$_path" ]]; then
+          _path="/"
+          _abort=1
+      fi
+      _uuid="$(btrfs filesystem show "$_path" 2>/dev/null |
+        grep uuid |
+        sed -e 's/^.*uuid: //')"
+      _path="${_path%/*}"
+      [[ -n "$_abort" ]] &&
+        __fatal "Rerun with -d, see where I failed to find an UUID"
+  done
+
+  printf '%s\n' "$_uuid"
 }
