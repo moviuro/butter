@@ -18,6 +18,7 @@ __init () {
         __fatal "See above messages"
     fi
 
+    # TODO: This is not needed for all subcommands and should be fixed
     # We check that the root has the same prog version as the current butter
     # If not, then force update of properties
     if __has_root_priv; then
@@ -34,6 +35,25 @@ __check_version () {
 
 __update () {
     __require_root_priv
+
+    # In commit cbf1ebe, we introduced support for multiple BTRFS filesystems.
+    # This change is not backwards-compatible and we should fail loudly if the
+    # version of butter present on that machine is v11 or older.
+    local _current_version _message
+    _current_version="$(__get_one_prop "version" "$butter_root/$butter_host")"
+
+    if [[ "$_current_version" =~ ^butter\ v([1-9]|1[0-1])$ ]]; then
+        _message="$butter_version is not backwards-compatible with
+   $_current_version as we changed the filesystem hierarchy to accomodate
+   multiple btrfs filesystems; please see 'butter(7)'
+
+   When ready, you can:
+   # setfattr -n $butter_prop_prefix.version -v \"$butter_version\" $butter_root/$butter_host"
+    fi
+
+    if [[ -n "$_message" ]]; then
+        __fatal "$_message"
+    fi
     # We update the properties of the root
     __set_one_prop "version" "$butter_version" "$butter_root/$butter_host"
     # We update the properties of the managed sub-volumes
