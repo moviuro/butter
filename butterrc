@@ -22,7 +22,8 @@ my_globals () {
                        'custom.*'
                        'snapshot.*'
                        'version'
-                       'uuid')
+                       'uuid'
+                       'host')
 
 }
 
