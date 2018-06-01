@@ -5,9 +5,13 @@ manage btrfs subvolumes.
 # Quickstart
 ## Needed folders
 ```sh
-# mkdir -p /mnt/butter
-# mount -osubvol=/ /dev/sda2 /mnt/butter
-# mkdir -p /mnt/butter/$(< /etc/machine-id)
+# butter_dir=/mnt/butter/"$(if [ -r /etc/machine-id ]; then cat /etc/machine-id; else uname -r; fi)"
+# mkdir -p "$butter_dir"
+# for fs in lsblk -fl|awk '{ if ($2 ~ "btrfs") print $3 }'; do
+    mkdir -p "$butter_dir/$fs"
+    mount -osubvol=/ /dev/disk/by-uuid/"$fs" !$
+    mkdir -p "$butter_dir/$fs/__butter"
+  done
 ```
 
 ## Take snapshots
