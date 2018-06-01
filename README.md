@@ -54,5 +54,6 @@ TL;DR:
 - `LICENSE` goes to wherever licenses go
 
 # Bugs
-If you can't patch the bugs you find, please open an issue on github describing
-the issue and append the output of `butter -d` that triggers the bug you found.
+If you can't patch the bugs you find, please open an issue on github or gitlab
+describing the issue and append the output of `butter -d` that triggers the bug
+you found.
