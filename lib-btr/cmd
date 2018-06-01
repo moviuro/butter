@@ -63,6 +63,10 @@ __parse_cmd () {
             shift
             __cmd_helpconfig
             exit ;;
+        hier)
+            shift
+            __cmd_print_hierarchy
+            exit ;;
         find)
             shift
             __cmd_find "$@"

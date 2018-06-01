@@ -19,6 +19,7 @@ SYNOPSIS
     butter [-d] get [-H] [-o values] MOUNTPOINT[,...] PROP [PROP [...]]
     butter [-d] help
     butter [-d] helpconfig
+    butter [-d] hier
     butter [-d] find [PROP VALUE [...]]
 
 DESCRIPTION
@@ -185,6 +186,10 @@ DESCRIPTION
 
         Display the butterrc(5) help text
 
+    butter hier
+
+        Display the butter(7) help text
+
     butter find [PROP VALUE [...]]
 
         Find snapshots or subvolumes that match PROP=VALUE for submitted
@@ -195,6 +200,8 @@ DESCRIPTION
         Find snapshots with type "foo"
           # butter find snapshot.is 1 snapshot.type foo
 
+SEE ALSO
+    butter(7), butterrc(5)
 __EOH__
 }
 
@@ -253,5 +260,53 @@ PROPERTIES
       This array contains a list of allowed properties to set on the different
       subvolumes that butter will handle.
 
+SEE ALSO
+    butter(8), butter(7)
+
+__EOH__
+}
+
+__cmd_print_hierarchy () {
+    cat << __EOH__
+NAME
+    butter - butter file hierarchy
+
+DESCRIPTION
+    Because butter handles btrfs subvolumes, snapshot, and also, maybe one day,
+    remote send/receive, we need to setup some things.
+
+    /mnt/butter - butter_root
+      This is where butter directories and others live. This can be set with
+      butterrc(5)
+
+    contents of /etc/machineid or output of \`uname -r\` - butter_host
+      There should be a directory inside \$butter_root per host that butter(8)
+      will manage.
+
+      Examples:
+        o /mnt/butter/c9865490735f4d0d825aaaab0dfaa6b0/
+        o /mnt/butter/toxoplasmosis/
+
+    btrfs UUID
+      We use UUIDs for each btrfs filesystem that butter(8) will manage.
+      FYI, you can use \`lsblk -fl|awk '{ if ($2 ~ "btrfs") print $3 }'\` to
+      find said UUIDs.  There, we mount the btrfs filesystems with the
+      appropriate UUID with the \`-o subvol=/\` option.
+
+      Example:
+        o /mnt/butter/c9865490735f4d0d825aaaab0dfaa6b0/ec627755-028e-4724-a25b-7b7062dede45
+
+    __butter
+      Then, to avoid polluting the root of the btrfs filesystem, we isolate
+      butter's snapshot in their own directory.  This folder typically holds
+      numerous snapshots, that can be hard to navigate.  Use \`butter snaplist\`
+      to find out what's what.
+
+    <mountpoint>@uuid
+      A typical butter subvolume.  Should curiosity get the best of you, use
+      getfattr(1) to dump extended attributes.
+
+SEE ALSO
+    butter(8), butterrc(5)
 __EOH__
 }
