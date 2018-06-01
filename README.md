@@ -7,9 +7,9 @@ manage btrfs subvolumes.
 ```sh
 # butter_dir=/mnt/butter/"$(if [ -r /etc/machine-id ]; then cat /etc/machine-id; else uname -r; fi)"
 # mkdir -p "$butter_dir"
-# for fs in lsblk -fl|awk '{ if ($2 ~ "btrfs") print $3 }'; do
+# for fs in $(lsblk -fl|awk '{ if ($2 ~ "btrfs") print $3 }'); do
     mkdir -p "$butter_dir/$fs"
-    mount -osubvol=/ /dev/disk/by-uuid/"$fs" !$
+    mount -osubvol=/ /dev/disk/by-uuid/"$fs" "$butter_dir/$fs"
     mkdir -p "$butter_dir/$fs/__butter"
   done
 ```
