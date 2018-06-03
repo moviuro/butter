@@ -233,3 +233,22 @@ __fs_uuid () {
 
   printf '%s\n' "$_uuid"
 }
+
+# Returns a number of maximum snapshots for a path and a specific type
+# Usage: __get_max_snap <path> <type>
+__get_max_snap () {
+  local _path _max _type
+
+  _path="${1:?requires path}"
+  _type="${2:-default}"
+
+  _max="$(__get_one_prop "snapshot.$_type.max" "$_path")"
+  if [[ -z "$_max" ]]; then
+    _max="$(__get_one_prop "snapshot.default.max" "$_path")"
+  fi
+  if [[ -z "$_max" ]]; then
+    _max="$default_max_snapshots"
+  fi
+
+  printf '%s\n' "$_max"
+}

@@ -130,8 +130,8 @@ __cmd_snapconfig () {
     local _lists _keyvalue _type _mountpoints _mountpoint _max
 
     mapfile -t _lists < <(
-        getfattr -d "$butter_root/$butter_host" 2>/dev/null |
-          grep -E "$butter_prop_prefix.mountpoints.managed."'[^.]*='
+        getfattr "$butter_root/$butter_host" 2>/dev/null |
+          grep "$butter_prop_prefix.mountpoints.managed"
     )
 
     { printf '%s^%s^%s\n' "TYPE" "MOUNTPOINT" "NUMBER"
@@ -143,7 +143,7 @@ __cmd_snapconfig () {
                            "$butter_root/$butter_host"
         )
         for _mountpoint in "${_mountpoints[@]}"; do
-            _max="$(__get_one_prop "snapshot.$_type.max" "$_mountpoint")"
+            _max="$(__get_max_snap "$_mountpoint" "$_type")"
             printf '%s^%s^%s\n' "$_type" "$_mountpoint" "$_max"
         done
     done } | column -ts^
