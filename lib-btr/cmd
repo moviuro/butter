@@ -127,17 +127,18 @@ __cmd_create () {
 }
 
 __cmd_snapconfig () {
-    local _lists _keyvalue _type _mountpoints _mountpoint _max
+    local _lists _key _type _mountpoints _mountpoint _max
 
+    # "$butter_root/$butter_host" holds the mountpoints that are snapshotted for
+    # each "type"
     mapfile -t _lists < <(
         getfattr "$butter_root/$butter_host" 2>/dev/null |
-          grep "$butter_prop_prefix.mountpoints.managed"
+          grep -E "$butter_prop_prefix.mountpoints.managed.[^\.]+"
     )
 
     { printf '%s^%s^%s\n' "TYPE" "MOUNTPOINT" "NUMBER"
-    for _keyvalue in "${_lists[@]}"; do
-        _type="${_keyvalue%=*}"
-        _type="${_type##*.}"
+    for _key in "${_lists[@]}"; do
+        _type="${_key##*.}"
         mapfile -t _mountpoints < <(
             __get_one_prop "mountpoints.managed.$_type" \
                            "$butter_root/$butter_host"
